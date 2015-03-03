@@ -8,21 +8,22 @@ import sys
 
 client = MongoClient()
 
-nrDocs = 1000
+maxNrDocs = 50000
 langCode = "en"
 loansCollection = client.kiva.loans
 #print "Number of loan descriptions in '%s': %d" % (langCode,loansCollection.find({"processed_description.texts.%s" % langCode :{'$exists': True}}).count())
 
-startYear = 2015
+startYear = 2010
 start = datetime(startYear, 1, 1)
+print >> sys.stderr, "Creating MongoDB cursor ...",
 c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},
                                     {"processed_description.texts.%s" % langCode :{'$exists': True}}
                                     ]
                           })
-
+print >> sys.stderr, "done"
 print "Number of loans in '%s' since %d: %d" % (langCode,startYear,c.count())
 
-id2word= Dictionary([])
+id2word=Dictionary([])
 
 # Heavily inspired by https://radimrehurek.com/gensim/tut1.html
 class MyCorpus(object):
@@ -33,7 +34,7 @@ class MyCorpus(object):
         self.dict = dict
 
     def __iter__(self):
-        for loan in self.cursor[:nrDocs]:
+        for loan in self.cursor[:maxNrDocs]:
             rawDoc = loan["processed_description"]["texts"][self.langCode]
             sentences = sent_tokenize(rawDoc)
             words = [word_tokenize(s) for s in sentences]
@@ -42,15 +43,20 @@ class MyCorpus(object):
 #            print flat
             yield self.dict.doc2bow(flat,allow_update=True)
                         
-streamedCorpus = MyCorpus(id2word, c, nrDocs, langCode)
-print >> sys.stderr, "First pass: stream in the MongoDB data ...",
-for c in streamedCorpus:
-    pass
+streamedCorpus = MyCorpus(id2word, c, maxNrDocs, langCode)
+print >> sys.stderr, "First pass: streaming from MongoDB ..."
+
+# By iterating over streamedCorpus, we actually stream in data and populate id2word
+realNrDocs = 0
+for i,c in enumerate(streamedCorpus): 
+    if i % 5000 == 0 and i != 0:
+        print >> sys.stderr, "read %d records ..." % i
+    realNrDocs += 1
 
 # Save dictionary on disk in binary format
 dictionaryBinaryFile = "data/topicmodelling/kiva_dict.bin"
 dictionaryTextFile = "data/topicmodelling/kiva_dict.txt"
-print >> sys.stderr, "saving into %s ..." % dictionaryBinaryFile,
+print >> sys.stderr, "wrote %s ..." % dictionaryBinaryFile,
 dictionaryDir = os.path.dirname(dictionaryBinaryFile)
 try:
     os.stat(dictionaryDir)
@@ -71,12 +77,14 @@ except:
     os.mkdir(corpusDir)
 
 # Second pass, because we need to *stream* the data into the BleiCorpus format
-print >> sys.stderr, "Second pass: stream in the MongoDB data ...",
+print >> sys.stderr, "Second pass: streaming from MongoDB ...",
 c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},
                                     {"processed_description.texts.%s" % langCode :{'$exists': True}}
                                     ]
                           })
 
 print >> sys.stderr, "saving into %s (Blei corpus format) ..." % corpusFile,
-BleiCorpus.serialize(corpusFile, MyCorpus(id2word, c, nrDocs, langCode), id2word=id2word)
+BleiCorpus.serialize(corpusFile, MyCorpus(id2word, c, maxNrDocs, langCode), id2word=id2word)
 print >> sys.stderr, "done"
+print >> sys.stderr, "Number of documents converted: %d" % realNrDocs
+print >> sys.stderr, "Vocabulary size: %d" % len(id2word.keys())

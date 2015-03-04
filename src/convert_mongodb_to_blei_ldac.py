@@ -1,15 +1,27 @@
 from pymongo import MongoClient
 from datetime import datetime
 from nltk import sent_tokenize, word_tokenize
-from gensim.corpora import Dictionary, BleiCorpus, dictionary
+from nltk.corpus import stopwords
+from gensim.corpora import Dictionary, BleiCorpus
 import codecs
 import os
 import sys
+import argparse
+import csv
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--dataDir', help='Directory for writing the corpus and vocabulary data', required=True)
+parser.add_argument('--corpusBaseName', help='Base name for the corpus', required=True)
+parser.add_argument('--stopwordFile', help='File with extra corpus-specific stop words', required=False)
+parser.add_argument('--maxNrDocs', help='Maximum number of documents to convert', default=1000000)
+args = parser.parse_args()
 
 client = MongoClient()
 
-maxNrDocs = 50000
+maxNrDocs = int(args.maxNrDocs)
 langCode = "en"
+langName="english"
 loansCollection = client.kiva.loans
 #print "Number of loan descriptions in '%s': %d" % (langCode,loansCollection.find({"processed_description.texts.%s" % langCode :{'$exists': True}}).count())
 
@@ -22,6 +34,17 @@ c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},
                           })
 print >> sys.stderr, "done"
 print "Number of loans in '%s' since %d: %d" % (langCode,startYear,c.count())
+
+
+stopWords = {stopWord:1 for stopWord in stopwords.words('english')}
+
+# Add additional stopwords, if specified
+if args.stopwordFile:
+    with open(args.stopwordFile, 'rb') as csvfile:
+     stopwordReader = csv.reader(csvfile, delimiter="\t")
+     for sw in stopwordReader:
+         stopWords[unicode(sw[0], 'utf-8')] = 1
+#print "stopWords =", stopWords
 
 id2word=Dictionary([])
 
@@ -39,7 +62,7 @@ class MyCorpus(object):
             sentences = sent_tokenize(rawDoc)
             words = [word_tokenize(s) for s in sentences]
 #            print words
-            flat = [val for sentence in words for val in sentence]
+            flat = [val.lower() for sentence in words for val in sentence if not stopWords.has_key(val.lower())]
 #            print flat
             yield self.dict.doc2bow(flat,allow_update=True)
                         
@@ -50,14 +73,14 @@ print >> sys.stderr, "First pass: streaming from MongoDB ..."
 realNrDocs = 0
 for i,c in enumerate(streamedCorpus): 
     if i % 5000 == 0 and i != 0:
-        print >> sys.stderr, "read %d records ..." % i
+        print >> sys.stderr, "read %d documents ..." % i
     realNrDocs += 1
 
 # Save dictionary on disk in binary format
-dictionaryBinaryFile = "data/topicmodelling/kiva_dict.bin"
-dictionaryTextFile = "data/topicmodelling/kiva_dict.txt"
+dictionaryBinaryFile = "%s/%s_dict.bin" % (args.dataDir, args.corpusBaseName)
+dictionaryTextFile = "%s/%s_dict.txt" % (args.dataDir, args.corpusBaseName)
 print >> sys.stderr, "wrote %s ..." % dictionaryBinaryFile,
-dictionaryDir = os.path.dirname(dictionaryBinaryFile)
+dictionaryDir = args.dataDir
 try:
     os.stat(dictionaryDir)
 except:
@@ -69,8 +92,8 @@ id2word.save_as_text(dictionaryTextFile)
 print >> sys.stderr, "done"
 
 # Save corpus on disk
-corpusFile = "data/topicmodelling/kiva.lda-c"
-corpusDir = os.path.dirname(corpusFile)
+corpusFile = "%s/%s.lda-c" % (args.dataDir, args.corpusBaseName)
+corpusDir = args.dataDir
 try:
     os.stat(corpusDir)
 except:

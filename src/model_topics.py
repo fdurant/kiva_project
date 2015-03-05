@@ -4,6 +4,8 @@ from gensim.models.tfidfmodel import TfidfModel
 import sys
 import argparse
 import os
+import pandas as pd
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataDir', help='Directory for reading the corpus and vocabulary data', required=True)
@@ -36,8 +38,8 @@ nrWords = int(args.nrWords)
 print >> sys.stderr, "Making topic model ...",
 ldaModel = LdaModel(corpus, id2word=id2word, num_topics=nrTopics)
 print >> sys.stderr, "done"
-topics = ldaModel.show_topics(num_topics=nrTopics,num_words=nrWords)
-for t in topics:
+topicsAsString = ldaModel.show_topics(num_topics=nrTopics,num_words=nrWords)
+for t in topicsAsString:
     print t
 
 modelFile = "%s/%s.lda_model" % (args.modelDir, args.corpusBaseName)
@@ -48,4 +50,27 @@ except:
     os.mkdir(modelDir)
 print >> sys.stderr, "Writing model file %s ..." % modelFile,
 ldaModel.save(modelFile)
+print >> sys.stderr, "done"
+
+print >> sys.stderr, "Creating complete topic/word matrix in memory:"
+# Store *all* words
+topicsAsWeightedWordVectors = ldaModel.show_topics(num_topics=nrTopics,num_words=len(id2word.keys()), formatted=False)
+#topicsAsWeightedWordVectors = ldaModel.show_topics(num_topics=nrTopics,num_words=nrWords, formatted=False)
+words = [w for w in sorted(id2word.values())]
+topicsWordsMatrix = pd.DataFrame(0.0, index=range(len(topicsAsWeightedWordVectors)), columns=words)
+for i,topic in enumerate(topicsAsWeightedWordVectors):
+#    print tuplesList
+    print >> sys.stderr, "topic %d/%d ..." % (i+1,len(topicsAsWeightedWordVectors))
+    for weight, word in topic:
+        topicsWordsMatrix[word][i] = weight
+print >> sys.stderr, "done"
+
+#print topicsWordsMatrix
+
+topicWordsMatrixFile = "%s/%s_topic_words_matrix.h5" % (args.modelDir, args.corpusBaseName)
+print >> sys.stderr, "Writing topic/word matrix file %s ..." % topicWordsMatrixFile,
+
+# See http://pandas.pydata.org/pandas-docs/dev/io.html#io-hdf5
+
+topicsWordsMatrix.to_hdf(topicWordsMatrixFile, 'table')
 print >> sys.stderr, "done"

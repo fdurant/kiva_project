@@ -15,6 +15,9 @@ parser.add_argument('--dataDir', help='Directory for writing the corpus and voca
 parser.add_argument('--corpusBaseName', help='Base name for the corpus', required=True)
 parser.add_argument('--stopwordFile', help='File with extra corpus-specific stop words', required=False)
 parser.add_argument('--maxNrDocs', help='Maximum number of documents to convert', default=1000000)
+parser.add_argument('--filterBelow', help='Minimum number of documents in which a vocab word must occur', default=5)
+parser.add_argument('--filterAbove', help='Vocab words that appear in more than this PERCENTAGE of docs are filtered', default=0.5)
+parser.add_argument('--filterKeepN', help='Number of vocab words to keep after the Below and Above filters have been applied', default=100000)
 args = parser.parse_args()
 
 client = MongoClient()
@@ -50,11 +53,12 @@ id2word=Dictionary([])
 
 # Heavily inspired by https://radimrehurek.com/gensim/tut1.html
 class MyCorpus(object):
-    def __init__(self, dict=None, cursor=None, firstNrDocs=-1, langCode='en'):
+    def __init__(self, dict=None, allowDictUpdate=True, cursor=None, firstNrDocs=-1, langCode='en'):
         self.cursor = cursor
         self.firstNrDocs = firstNrDocs
         self.langCode = langCode
         self.dict = dict
+        self.allowDictUpdate = allowDictUpdate
 
     def __iter__(self):
         for loan in self.cursor[:maxNrDocs]:
@@ -64,17 +68,23 @@ class MyCorpus(object):
 #            print words
             flat = [val.lower() for sentence in words for val in sentence if not stopWords.has_key(val.lower())]
 #            print flat
-            yield self.dict.doc2bow(flat,allow_update=True)
+            yield self.dict.doc2bow(flat,allow_update=self.allowDictUpdate)
                         
-streamedCorpus = MyCorpus(id2word, c, maxNrDocs, langCode)
+streamedCorpus = MyCorpus(id2word, True, c, maxNrDocs, langCode)
 print >> sys.stderr, "First pass: streaming from MongoDB ..."
 
+print >> sys.stderr, "creating the dictionary ..."
 # By iterating over streamedCorpus, we actually stream in data and populate id2word
 realNrDocs = 0
 for i,c in enumerate(streamedCorpus): 
     if i % 5000 == 0 and i != 0:
         print >> sys.stderr, "read %d documents ..." % i
     realNrDocs += 1
+
+# Filter out unwanted vocabulary items
+print >> sys.stderr, "filtering the dictionary ...",
+id2word.filter_extremes(no_below=int(args.filterBelow), no_above=float(args.filterAbove), keep_n=int(args.filterKeepN))
+print >> sys.stderr, "done"
 
 # Save dictionary on disk in binary format
 dictionaryBinaryFile = "%s/%s_dict.bin" % (args.dataDir, args.corpusBaseName)
@@ -107,7 +117,7 @@ c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},
                           })
 
 print >> sys.stderr, "saving into %s (Blei corpus format) ..." % corpusFile,
-BleiCorpus.serialize(corpusFile, MyCorpus(id2word, c, maxNrDocs, langCode), id2word=id2word)
+BleiCorpus.serialize(corpusFile, MyCorpus(id2word, False, c, maxNrDocs, langCode), id2word=id2word)
 print >> sys.stderr, "done"
 print >> sys.stderr, "Number of documents converted: %d" % realNrDocs
-print >> sys.stderr, "Vocabulary size: %d" % len(id2word.keys())
+print >> sys.stderr, "Vocabulary size: %d" % len(id2word.items())

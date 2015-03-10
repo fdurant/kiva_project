@@ -16,71 +16,73 @@ import numpy as np
 
 from recursive_kmeans import myclustering
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--modelDir', help='Directory for reading the LDA model', required=True)
-parser.add_argument('--modelBaseName', help='Base name for the model', required=True)
-parser.add_argument('--nrClusters', help='Number of clusters in which to organize the topic models', required=True)
-parser.add_argument('--nrWords', help='Number of words to show per topic', default=10)
-args = parser.parse_args()
+def parseArguments():
 
-topicWordsMatrixFile = "%s/%s_topic_words_matrix.h5" % (args.modelDir, args.modelBaseName)
-print >> sys.stderr, "Reading topic/word matrix file %s ..." % topicWordsMatrixFile,
-topicsWordsMatrix = read_hdf(topicWordsMatrixFile, 'table')
-print >> sys.stderr, "done"
+    global args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--modelDir', help='Directory for reading the LDA model', required=True)
+    parser.add_argument('--modelBaseName', help='Base name for the model', required=True)
+    parser.add_argument('--nrClusters', help='Number of clusters in which to organize the topic models', required=True)
+    parser.add_argument('--nrWords', help='Number of words to show per topic', default=10)
+    args = parser.parse_args()
 
-#print topicsWordsMatrix
+def readTopicWordsMatrix():
 
+    global topicsWordsMatrix
+    topicWordsMatrixFile = "%s/%s_topic_words_matrix.h5" % (args.modelDir, args.modelBaseName)
+    print >> sys.stderr, "Reading topic/word matrix file %s ..." % topicWordsMatrixFile,
+    topicsWordsMatrix = read_hdf(topicWordsMatrixFile, 'table')
+    print >> sys.stderr, "done"
 
-nrClusters = int(args.nrClusters)
-nrWords = int(args.nrWords)
-clusterer = AgglomerativeClustering(n_clusters=nrClusters, affinity='euclidean', linkage="ward")
-print >> sys.stderr, "Hierarchically clustering topics ...",
+#    print topicsWordsMatrix
 
-hierarchy = myclustering(topicsWordsMatrix, branching_factor=nrClusters)
-print "recursive hierarchy:"
-pprint(hierarchy)
+def clusterTopics():
 
-hierarchy = clusterer.fit_predict(topicsWordsMatrix)
-#hierarchy = [0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0]
+    global hierarchy
+    global nrClusters
+    global nrWords
 
-# ALTERNATIVE CLUSTERING LIBRARY
-# For examples, see
-# http://nbviewer.ipython.org/github/rasbt/pattern_classification/blob/master/clustering/hierarchical/clust_complete_linkage.ipynb
-# http://nbviewer.ipython.org/github/OxanaSachenkova/hclust-python/blob/master/hclust.ipynb
-# For documentation, see
-# http://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html
+    nrClusters = int(args.nrClusters)
+    nrWords = int(args.nrWords)
+    print >> sys.stderr, "Hierarchically clustering topics ...",
 
-#data_dist = pdist(topicsWordsMatrix) # computing the distance
-#data_link = linkage(data_dist) # computing the linkage
-#hierarchy = fclusterdata(data_link, 20, criterion='maxclust', depth=2)
-#print "data_link:"
-#print data_link 
+    hierarchy = myclustering(topicsWordsMatrix, branching_factor=nrClusters)
+    print "recursive hierarchy:"
+    pprint(hierarchy)
 
-print "hierarchy:", hierarchy 
-#exit()
-print >> sys.stderr, "done"
+    #ALTERNATIVE CLUSTERING
+    #clusterer = AgglomerativeClustering(n_clusters=nrClusters, affinity='euclidean', linkage="ward")
+    #hierarchy = clusterer.fit_predict(topicsWordsMatrix)
+    #hierarchy = [0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0]
 
-topClusterId = max(hierarchy)
+    #OTHER ALTERNATIVE CLUSTERING LIBRARY
+    #For examples, see
+    #http://nbviewer.ipython.org/github/rasbt/pattern_classification/blob/master/clustering/hierarchical/clust_complete_linkage.ipynb
+    #http://nbviewer.ipython.org/github/OxanaSachenkova/hclust-python/blob/master/hclust.ipynb
+    #For documentation, see
+    #http://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html
 
-# Contains a list of lists
-topicIndices = []
-for clusterIndex in range(topClusterId+1):
-    topicIds = []
-    for i in range(len(hierarchy)):
-        if hierarchy[i] == clusterIndex:
-            topicIds.append(i)
-    topicIndices.append(topicIds)
+    #data_dist = pdist(topicsWordsMatrix) # computing the distance
+    #data_link = linkage(data_dist) # computing the linkage
+    #hierarchy = fclusterdata(data_link, 20, criterion='maxclust', depth=2)
+    #print "data_link:"
+    #print data_link 
 
-#print "topicIndices ="
-#pprint(topicIndices)
+    #print "hierarchy:", hierarchy 
+    #exit()
+    print >> sys.stderr, "done"
 
-modelFile = "%s/%s.lda_model" % (args.modelDir, args.modelBaseName)
-modelDir = args.modelDir
-print >> sys.stderr, "Loading model file %s ..." % modelFile,
-ldaModel = LdaModel.load(modelFile)
-print >> sys.stderr, "done"
-topicsAsWeightedWordVectors = ldaModel.show_topics(num_topics=len(hierarchy),formatted=False)
-#print topicsAsWeightedWordVectors
+def loadLDAModelFile():
+
+    global topicsAsWeightedWordVectors
+    modelFile = "%s/%s.lda_model" % (args.modelDir, args.modelBaseName)
+    modelDir = args.modelDir
+    print >> sys.stderr, "Loading model file %s ..." % modelFile,
+    ldaModel = LdaModel.load(modelFile)
+    print >> sys.stderr, "done"
+    topicsAsWeightedWordVectors = ldaModel.show_topics(num_topics=topicsWordsMatrix.shape[0],num_words=nrWords,formatted=False)
+#    print "topicsAsWeightedWordVectors = "
+#    pprint(topicsAsWeightedWordVectors)
 
 def mergeWeightedWords(listsOfWeightedWordTupleLists):
     '''
@@ -116,72 +118,74 @@ def mergeWeightedWords(listsOfWeightedWordTupleLists):
 #    pprint(result)
     return result
 
-def processHierarchyLevel(topics, hierarchy, clusterId, topicIndex, topicIndices):
+def processHierarchyLevel(topics, hierarchy):
 
-#    print " " * (nrClusters - clusterId),
-#    print "Entering processHierarchyLevel with clusterID %d and topicIndex %d" % (clusterId, topicIndex)
+#    print "Entering processHierarchyLevel"
 #    print "hierarchy = ", hierarchy
+
+    assert(type(hierarchy) == list)
 
     result = []
     weightedWords = []
 
-    assert(len(topicIndices)>0), "topicIndices must not be empty!"
-    for topicId in topicIndices[clusterId]:
-#        print "topicId = %d" % topicId
-        sibling = {}
-        # The 'b_' prefix is a hack to facilitate JSON dumps with ordered keys
-        topWeightedWords = topics[topicId][0:nrWords]
-#        print "topWeightedWords = "
-#        pprint(topWeightedWords)
-#        print
-        # The 'a_' prefix is a hack to facilitate JSON dumps with ordered keys
-        sibling[unicode('a_words')] = [w[1] for w in topWeightedWords]
-        sibling[unicode('b_name')] = unicode('topic_%d' % topicId)
-        sibling[unicode('weightedWords')] = [w for w in topWeightedWords]
-        result.append(sibling)
-        weightedWords.append([w for w in topWeightedWords])
+    for elem in hierarchy:
 
-    if clusterId > 0:
-        children = processHierarchyLevel(topics=topics,
-                                         hierarchy=hierarchy,
-                                         clusterId=clusterId-1,
-                                         topicIndex=list(hierarchy).index(clusterId-1),
-                                         topicIndices=topicIndices)
-        for child in children:
-            weightedWords.append(child[unicode('weightedWords')])
-        # We may have to throw this away later, unless it doesn't hurt for D3/Hierarchie
-        # del children[unicode('weightedWords')]
+#        print "elem = ", elem
+#        print "type(elem) = ", type(elem)
+        if type(elem) == type([]):
 
-        mergedWeightedWords = mergeWeightedWords(weightedWords)
-        # Add to the sibling {} that was appended to result above
-        result[-1][unicode('a_words')] = [elem[1] for elem in mergedWeightedWords]
-        result[-1][unicode('weightedWords')] = mergedWeightedWords
-        result[-1][unicode('children')] = children
+            # Recursive call returns a list
+            children = processHierarchyLevel(topics=topics,
+                                             hierarchy=elem)
+            
+#            print "children = ",
+#            pprint(children)
+            assert(type(children) == type([])), "Children is not of list type"
 
-#    print "RETURNS: "
+            for child in children:
+                familyMember = {}
+                assert(type(child) == type({})), "Child is not a dict"
+                weightedWords.append(child[unicode('weightedWords')])
+                mergedWeightedWords = mergeWeightedWords(weightedWords)
+
+            familyMember[unicode('a_words')] = [elem[1] for elem in mergedWeightedWords]
+            familyMember[unicode('weightedWords')] = mergedWeightedWords
+            familyMember[unicode('children')] = children
+
+            result.append(familyMember)
+
+        else:
+            # We've reached a leaf, i.e. a topic
+            sibling = {} 
+    
+            topicId = elem
+            topWeightedWords = topics[topicId][0:nrWords]
+            sibling[unicode('a_words')] = [w[1] for w in topWeightedWords]
+            sibling[unicode('b_name')] = unicode('topic_%d' % topicId)
+            sibling[unicode('weightedWords')] = [w for w in topWeightedWords]
+            result.append(sibling)
+            weightedWords.append([w for w in topWeightedWords])
+
+#    print "result = "
 #    pprint(result)
     return result
 
-def buildD3Hierarchy(topics, hierarchy, topicIndices):
+def buildD3Hierarchy(topics, hierarchy):
     '''
     topics is a list of lists containing (weight, word) tuples
-    Hierarchy is a list of numbers from 0 through nrClusters. The position of each number corresponds with the
-    position of the topic in topicsAsWeightedWordVectors
+    Hierarchy is a nested list, where the leaves correspond to topicIds
     topicIndices is a lists of lists of indices into topics
+
+    This function returns a nested data structure:
+    a list of dict(s) containing lists of dict(s) of lists of dict(s)...
     '''
     
-    assert(len(topics) == len(hierarchy)), "Found a different number of topics in the topic list (%d) as in the hierarchy (%d)!" % (len(topics), len(hierarchy))
-    assert(len(topicIndices) == nrClusters), "The number of elements of topicIndices (%d) must be equal to nrClusters (%d)" % (len(topicIndices), nrClusters)
-
-    topClusterId = max(hierarchy)
+    global nrClusters
 
     # Start at the top of the hierarchy, building it recursively
     result = {}
     result[unicode('topic_data')] = processHierarchyLevel(topics=topics,
-                                                          hierarchy=hierarchy,
-                                                          clusterId=topClusterId,
-                                                          topicIndex=list(hierarchy).index(topClusterId),
-                                                          topicIndices=topicIndices)
+                                                          hierarchy=hierarchy)
     return result
 
 def removeWeightedWords(tree):
@@ -201,18 +205,34 @@ def removeWeightedWords(tree):
         del tree[u'weightedWords']
 #        print "done"
 
-print >> sys.stderr, "Building nested hierarchy in memory ... ",
-d3Hierarchy = buildD3Hierarchy(topicsAsWeightedWordVectors,hierarchy,topicIndices)
-removeWeightedWords(d3Hierarchy['topic_data'][0])
-print "done"
+def BuildNestedHierarchy():
+
+    global d3Hierarchy
+    print >> sys.stderr, "Building nested hierarchy in memory ... ",
+    d3Hierarchy = buildD3Hierarchy(topicsAsWeightedWordVectors,hierarchy)
+#    removeWeightedWords(d3Hierarchy['topic_data'][0])
+    print "done"
 
 
-jsonFile = "%s/%sdata.json" % (args.modelDir, args.modelBaseName)
-print >> sys.stderr, "Dumping object hierarchy into JSON file %s ... " % jsonFile,
-with open(jsonFile, 'w') as outfile:
-    tmp = json.dumps(d3Hierarchy, sort_keys=True)
-    # Hack
-    tmp = tmp.replace('a_words','words')
-    tmp = tmp.replace('b_name','name')
-    outfile.write(tmp)
-print "done"
+def DumpTopicHierarchyIntoJSONFile():
+
+    jsonFile = "%s/%sdata.json" % (args.modelDir, args.modelBaseName)
+    print >> sys.stderr, "Dumping object hierarchy into JSON file %s ... " % jsonFile,
+    with open(jsonFile, 'w') as outfile:
+        tmp = json.dumps(d3Hierarchy, sort_keys=True)
+        # Hack
+        tmp = tmp.replace('a_words','words')
+        tmp = tmp.replace('b_name','name')
+        outfile.write(tmp)
+    print "done"
+
+if __name__ == "__main__":
+    parseArguments()
+    readTopicWordsMatrix()
+    clusterTopics()
+
+    loadLDAModelFile()
+
+    BuildNestedHierarchy()
+
+    DumpTopicHierarchyIntoJSONFile()

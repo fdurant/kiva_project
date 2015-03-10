@@ -8,7 +8,8 @@ from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import fclusterdata, linkage, dendrogram
 from pprint import pprint
 import json
-
+import random
+import pickle
 import argparse
 import os
 import pandas as pd
@@ -84,6 +85,13 @@ def loadLDAModelFile():
 #    print "topicsAsWeightedWordVectors = "
 #    pprint(topicsAsWeightedWordVectors)
 
+def loadInferredDistributions():
+    
+    global topicDistributionsAllDocs
+    topicDistributionsFile = "%s/%s_topic_distributions.p" % (args.modelDir, args.modelBaseName)
+    with open(topicDistributionsFile, 'rb') as pickleFile:
+        topicDistributionsAllDocs = pickle.load(pickleFile)
+
 def mergeWeightedWords(listsOfWeightedWordTupleLists):
     '''
     Input is a list of N-length lists of (weight, word) tuples
@@ -118,7 +126,7 @@ def mergeWeightedWords(listsOfWeightedWordTupleLists):
 #    pprint(result)
     return result
 
-def processHierarchyLevel(topics, hierarchy):
+def processHierarchyLevel(topics, hierarchy,topicDistributions):
 
 #    print "Entering processHierarchyLevel"
 #    print "hierarchy = ", hierarchy
@@ -127,6 +135,7 @@ def processHierarchyLevel(topics, hierarchy):
 
     result = []
     weightedWords = []
+    topicDistributionSizeSum = 0.0
 
     for elem in hierarchy:
 
@@ -136,7 +145,8 @@ def processHierarchyLevel(topics, hierarchy):
 
             # Recursive call returns a list
             children = processHierarchyLevel(topics=topics,
-                                             hierarchy=elem)
+                                             hierarchy=elem,
+                                             topicDistributions=topicDistributions)
             
 #            print "children = ",
 #            pprint(children)
@@ -147,9 +157,11 @@ def processHierarchyLevel(topics, hierarchy):
                 assert(type(child) == type({})), "Child is not a dict"
                 weightedWords.append(child[unicode('weightedWords')])
                 mergedWeightedWords = mergeWeightedWords(weightedWords)
+                topicDistributionSizeSum += child['size']
 
             familyMember[unicode('a_words')] = [elem[1] for elem in mergedWeightedWords]
             familyMember[unicode('weightedWords')] = mergedWeightedWords
+            familyMember[unicode('size')] = topicDistributionSizeSum
             familyMember[unicode('children')] = children
 
             result.append(familyMember)
@@ -162,6 +174,7 @@ def processHierarchyLevel(topics, hierarchy):
             topWeightedWords = topics[topicId][0:nrWords]
             sibling[unicode('a_words')] = [w[1] for w in topWeightedWords]
             sibling[unicode('b_name')] = unicode('topic_%d' % topicId)
+            sibling[unicode('size')] = int(topicDistributions[0,topicId])
             sibling[unicode('weightedWords')] = [w for w in topWeightedWords]
             result.append(sibling)
             weightedWords.append([w for w in topWeightedWords])
@@ -170,11 +183,11 @@ def processHierarchyLevel(topics, hierarchy):
 #    pprint(result)
     return result
 
-def buildD3Hierarchy(topics, hierarchy):
+def buildD3Hierarchy(topics, hierarchy,topicDistributions):
     '''
     topics is a list of lists containing (weight, word) tuples
     Hierarchy is a nested list, where the leaves correspond to topicIds
-    topicIndices is a lists of lists of indices into topics
+    topicDistributions a numpy ndarray that contains the distribution counts of all documents over topics
 
     This function returns a nested data structure:
     a list of dict(s) containing lists of dict(s) of lists of dict(s)...
@@ -185,7 +198,8 @@ def buildD3Hierarchy(topics, hierarchy):
     # Start at the top of the hierarchy, building it recursively
     result = {}
     result[unicode('topic_data')] = processHierarchyLevel(topics=topics,
-                                                          hierarchy=hierarchy)
+                                                          hierarchy=hierarchy,
+                                                          topicDistributions=topicDistributions)
     return result
 
 def removeWeightedWords(tree):
@@ -209,7 +223,7 @@ def BuildNestedHierarchy():
 
     global d3Hierarchy
     print >> sys.stderr, "Building nested hierarchy in memory ... ",
-    d3Hierarchy = buildD3Hierarchy(topicsAsWeightedWordVectors,hierarchy)
+    d3Hierarchy = buildD3Hierarchy(topicsAsWeightedWordVectors,hierarchy,topicDistributionsAllDocs)
 #    removeWeightedWords(d3Hierarchy['topic_data'][0])
     print "done"
 
@@ -220,7 +234,7 @@ def DumpTopicHierarchyIntoJSONFile():
     print >> sys.stderr, "Dumping object hierarchy into JSON file %s ... " % jsonFile,
     with open(jsonFile, 'w') as outfile:
         tmp = json.dumps(d3Hierarchy, sort_keys=True)
-        # Hack
+        # Hack to make sure that 'words' and 'name' are found first by the relevant D3 library
         tmp = tmp.replace('a_words','words')
         tmp = tmp.replace('b_name','name')
         outfile.write(tmp)
@@ -228,8 +242,12 @@ def DumpTopicHierarchyIntoJSONFile():
 
 if __name__ == "__main__":
     parseArguments()
+
     readTopicWordsMatrix()
+
     clusterTopics()
+
+    loadInferredDistributions()
 
     loadLDAModelFile()
 

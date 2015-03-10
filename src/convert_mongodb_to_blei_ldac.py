@@ -28,7 +28,7 @@ langName="english"
 loansCollection = client.kiva.loans
 #print "Number of loan descriptions in '%s': %d" % (langCode,loansCollection.find({"processed_description.texts.%s" % langCode :{'$exists': True}}).count())
 
-startYear = 2010
+startYear = 2014
 start = datetime(startYear, 1, 1)
 print >> sys.stderr, "Creating MongoDB cursor ...",
 c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},

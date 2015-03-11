@@ -59,7 +59,10 @@ def recursive_kmeans(topics2Words,branching_factor):
             result.append(subres)
         else:
             topicIndicesInMatrix=[list(topics2Words.index.values)[i] for i in topicIndicesThisCluster]
-            result.append(topicIndicesInMatrix)
+            if len(topicIndicesInMatrix) == 1:
+                result.append(topicIndicesInMatrix[0])
+            else:
+                result.append(topicIndicesInMatrix)
 
 #    print
     return result

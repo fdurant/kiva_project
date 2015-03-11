@@ -73,15 +73,20 @@ def processDocuments():
         indexMax=gamma.argmax()
 #        print "indexMax = ", indexMax
         winningTopic[indexMax] += 1
-        topicDistributionsAllDocs += gamma   
+        topicDistributionsAllDocs += gamma
 
+    # Normalize
     totalMass = topicDistributionsAllDocs.sum()
+    topicDistributionsAllDocs = topicDistributionsAllDocs/totalMass
 
     for topicId in range(len(topicsAsWeightedWordVectors)):
-        print "%d winning (%1.2f%%); %1.2f%% weight in %s" % (winningTopic[topicId], 
+        print "%d winning (%1.2f%%); %1.2f%% weight in [%s]" % (winningTopic[topicId], 
                                                               (float(winningTopic[topicId])/totalNrDocs)*100,
-                                                              (topicDistributionsAllDocs[0,topicId]/totalMass)*100,
+                                                              (topicDistributionsAllDocs[0,topicId])*100,
                                                               " ".join([t[1] for t in topicsAsWeightedWordVectors[topicId]]))
+
+    # Express in absolute terms ()
+    topicDistributionsAllDocs = topicDistributionsAllDocs * totalNrDocs
 
 def saveInferredDistributions():
     

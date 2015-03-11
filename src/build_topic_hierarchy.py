@@ -92,10 +92,11 @@ def loadInferredDistributions():
     with open(topicDistributionsFile, 'rb') as pickleFile:
         topicDistributionsAllDocs = pickle.load(pickleFile)
 
-def mergeWeightedWords(listsOfWeightedWordTupleLists):
+def mergeWeightedWords(listsOfWeightedWordTupleLists,sizes):
     '''
-    Input is a list of N-length lists of (weight, word) tuples
-    Output is an N-length sorted list of (weight, word tuples)
+    listsOfWeightedWordTupleLists is a list of N-length lists of (weight, word) tuples
+    sizes is a list of sizes
+    Output is a summary N-length sorted list of (weight, word tuples) weighted by size
     We'll start with a naive implementation that just assembles the sublists and takes the N with the highest weights
     '''
 
@@ -103,22 +104,27 @@ def mergeWeightedWords(listsOfWeightedWordTupleLists):
 #    pprint(listsOfWeightedWordTupleLists)
 #    print
 
+    assert(len(listsOfWeightedWordTupleLists) == len(sizes))
+
+    totalSizes = sum(sizes)
+
     result = []
     n = len(listsOfWeightedWordTupleLists[0])
     words2weightSums = {}
     for l in listsOfWeightedWordTupleLists[1:]:
         assert(n == len(l))
-    for l in listsOfWeightedWordTupleLists:
+    for i,l in enumerate(listsOfWeightedWordTupleLists):
         for tuple in l:
 #            print "tuple = ", tuple
             weight = float(tuple[0]) # Convert from numpy.float64 to native float
             word = tuple[1]
+            size = sizes[i]
             assert(type(weight)==type(0.0)), "%f" % weight
             assert(type(word) == type(u'abc')), "%s" % word
             if words2weightSums.has_key(word):
-                words2weightSums[word] += weight
+                words2weightSums[word] += (weight*size)/totalSizes
             else:
-                words2weightSums[word] = weight
+                words2weightSums[word] = (weight*size)/totalSizes
 
     # Take the top-n
     result = [(elem[1],elem[0]) for elem in sorted(words2weightSums.items(), key=lambda x:words2weightSums[x[0]], reverse=True)][0:n]
@@ -134,8 +140,6 @@ def processHierarchyLevel(topics, hierarchy,topicDistributions):
     assert(type(hierarchy) == list)
 
     result = []
-    weightedWords = []
-    topicDistributionSizeSum = 0.0
 
     for elem in hierarchy:
 
@@ -152,16 +156,22 @@ def processHierarchyLevel(topics, hierarchy,topicDistributions):
 #            pprint(children)
             assert(type(children) == type([])), "Children is not of list type"
 
+            topicIdsChildren = []
+            topicDistributionSizes = []
+            weightedWords = []
+
             for child in children:
                 familyMember = {}
                 assert(type(child) == type({})), "Child is not a dict"
                 weightedWords.append(child[unicode('weightedWords')])
-                mergedWeightedWords = mergeWeightedWords(weightedWords)
-                topicDistributionSizeSum += child['size']
+                topicDistributionSizes.append(child[unicode('b_size')])
+                topicIdsChildren.append(child[unicode('b_name')].replace('topic_',''))
 
+            mergedWeightedWords = mergeWeightedWords(weightedWords,topicDistributionSizes)
             familyMember[unicode('a_words')] = [elem[1] for elem in mergedWeightedWords]
+            familyMember[unicode('b_name')] = unicode('topic_%s' % "_".join(topicIdsChildren))
             familyMember[unicode('weightedWords')] = mergedWeightedWords
-            familyMember[unicode('size')] = topicDistributionSizeSum
+            familyMember[unicode('b_size')] = int(sum(topicDistributionSizes))
             familyMember[unicode('children')] = children
 
             result.append(familyMember)
@@ -174,10 +184,9 @@ def processHierarchyLevel(topics, hierarchy,topicDistributions):
             topWeightedWords = topics[topicId][0:nrWords]
             sibling[unicode('a_words')] = [w[1] for w in topWeightedWords]
             sibling[unicode('b_name')] = unicode('topic_%d' % topicId)
-            sibling[unicode('size')] = int(topicDistributions[0,topicId])
+            sibling[unicode('b_size')] = int(topicDistributions[0,topicId])
             sibling[unicode('weightedWords')] = [w for w in topWeightedWords]
             result.append(sibling)
-            weightedWords.append([w for w in topWeightedWords])
 
 #    print "result = "
 #    pprint(result)
@@ -209,8 +218,9 @@ def removeWeightedWords(tree):
     
     '''
     assert(type(tree) == dict), "tree is not a dict"
-    if tree.has_key(u'name'):
-        topicName = tree['name']
+    topicName = ""
+    if tree.has_key(u'b_name'):
+        topicName = tree[u'b_name']
     if tree.has_key(u'children'):
         for c in tree[u'children']:
             removeWeightedWords(c)
@@ -224,9 +234,10 @@ def BuildNestedHierarchy():
     global d3Hierarchy
     print >> sys.stderr, "Building nested hierarchy in memory ... ",
     d3Hierarchy = buildD3Hierarchy(topicsAsWeightedWordVectors,hierarchy,topicDistributionsAllDocs)
-#    removeWeightedWords(d3Hierarchy['topic_data'][0])
+    for subTree in d3Hierarchy['topic_data']:
+        removeWeightedWords(subTree)
     print "done"
-
+    pprint(d3Hierarchy)
 
 def DumpTopicHierarchyIntoJSONFile():
 
@@ -237,6 +248,9 @@ def DumpTopicHierarchyIntoJSONFile():
         # Hack to make sure that 'words' and 'name' are found first by the relevant D3 library
         tmp = tmp.replace('a_words','words')
         tmp = tmp.replace('b_name','name')
+        tmp = tmp.replace('b_value','value')
+        tmp = tmp.replace('b_depth','depth')
+        tmp = tmp.replace('b_size','size')
         outfile.write(tmp)
     print "done"
 

@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dataDir', help='Directory for writing the corpus and vocabulary data', required=True)
 parser.add_argument('--corpusBaseName', help='Base name for the corpus', required=True)
 parser.add_argument('--stopwordFile', help='File with extra corpus-specific stop words', required=False)
+parser.add_argument('--startYear', help='Get all documents starting with this year', default=2014)
 parser.add_argument('--maxNrDocs', help='Maximum number of documents to convert', default=1000000)
 parser.add_argument('--filterBelow', help='Minimum number of documents in which a vocab word must occur', default=5)
 parser.add_argument('--filterAbove', help='Vocab words that appear in more than this PERCENTAGE of docs are filtered', default=0.5)
@@ -28,7 +29,7 @@ langName="english"
 loansCollection = client.kiva.loans
 #print "Number of loan descriptions in '%s': %d" % (langCode,loansCollection.find({"processed_description.texts.%s" % langCode :{'$exists': True}}).count())
 
-startYear = 2014
+startYear = int(args.startYear)
 start = datetime(startYear, 1, 1)
 print >> sys.stderr, "Creating MongoDB cursor ...",
 c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},

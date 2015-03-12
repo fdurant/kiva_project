@@ -1,4 +1,4 @@
-from sklearn.cluster import KMeans, MiniBatchKMeans, MeanShift
+from sklearn.cluster import KMeans
 import pandas as pd
 from pprint import pprint
 
@@ -17,7 +17,7 @@ def myclustering(topics2Words,branching_factor=4):
 def recursive_kmeans(topics2Words,branching_factor):
     '''
     Starting from a topics x words matrix (i.e. from the result of topic mapping),
-    we produce a balanced hierarchy of these topics by recursively applying Kmeans
+    we produce a hierarchy of these topics by recursively applying Kmeans
     clustering (with constant K across recursions), until we can't cluster anymore
 
     The function returns a nested list of lists, where the leaves are the original row numbers of topics2Words
@@ -34,8 +34,8 @@ def recursive_kmeans(topics2Words,branching_factor):
     assert(branching_factor >= 2)
 
     # Do KMeans clustering at this level
-    model = KMeans(n_clusters=branching_factor, init='k-means++', n_init=10)
-#    model = MeanShift()
+#    model = KMeans(n_clusters=branching_factor, init='k-means++', n_init=10)
+    model = KMeans(n_clusters=branching_factor, init='random', n_init=500)
     clusters = model.fit_predict(topics2Words)
     
 #    print "clusters = ", clusters

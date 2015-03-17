@@ -38,6 +38,7 @@ columns.append('funded_amount')
 columns.append('posted_date')
 columns.append('planned_expiration_date')
 columns.append('location_country_code')
+columns.append('lender_count')
 
 dfLoans = pd.DataFrame(columns=columns)
 loans = []

@@ -3,22 +3,13 @@ import glob
 from pprint import pprint
 import langid
 import codecs
-from clean_kiva_descriptions import removeHtmlTags, identifyLanguagePerParagraph
+from clean_kiva_descriptions import removeHtmlTags, identifyLanguagePerParagraph, date_hook
 import sys
 from pymongo import MongoClient, TEXT
 from datetime import datetime
 
 loanFiles = glob.glob("./data/static/loans/*.json")
 nrLoanFiles = len(loanFiles)
-
-# Copied from http://stackoverflow.com/questions/8793448/how-to-convert-to-a-python-datetime-object-with-json-loads
-def date_hook(json_dict):
-    for (key, value) in json_dict.items():
-        try:
-            json_dict[key] = datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
-        except:
-            pass
-    return json_dict
 
 def detectParagraphsAndLanguages(loan):
     paragraphsByDetectedLanguage = {}

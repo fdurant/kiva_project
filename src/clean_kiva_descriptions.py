@@ -3,6 +3,15 @@ import langid
 import codecs
 import sys
 
+# Copied from http://stackoverflow.com/questions/8793448/how-to-convert-to-a-python-datetime-object-with-json-loads
+def date_hook(json_dict):
+    for (key, value) in json_dict.items():
+        try:
+            json_dict[key] = datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+        except:
+            pass
+    return json_dict
+
 # Borrowed from http://farmdev.com/talks/unicode/
 def to_unicode_or_bust(obj, encoding='utf-8'):
     if isinstance(obj, basestring):

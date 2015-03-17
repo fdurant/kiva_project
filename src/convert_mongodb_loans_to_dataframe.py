@@ -51,6 +51,7 @@ for i,c in enumerate(c):
     postedDate = c[u'posted_date']
     plannedExpirationDate = c[u'planned_expiration_date']
     locationCountryCode = c[u'location'][u'country_code']
+    lenderCount = c[u'lender_count']
     
     loans.append({'id':id, 
                   'borrower_majority_gender':borrowersMajorityGender, 
@@ -58,7 +59,8 @@ for i,c in enumerate(c):
                   'funded_amount':fundedAmount, 
                   'posted_date':postedDate, 
                   'planned_expiration_date':plannedExpirationDate, 
-                  'location_country_code':locationCountryCode})
+                  'location_country_code':locationCountryCode,
+                  'lender_count':lenderCount})
     
     if i % 50000 == 0 and i != 0:
         print >> sys.stderr, "read %d documents ..." % i

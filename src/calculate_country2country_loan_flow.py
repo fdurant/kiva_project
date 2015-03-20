@@ -28,7 +28,8 @@ isoregionCode2Name = {'eu':'Europe',
                       'af':'Africa',
                       'as':'Asia',
                       'oc':'Oceania',
-                      'an':'Antarctica',
+                      'unk':'Unknown',
+                      'oth':'Other'
                       }
 
 print >> sys.stderr, "Loading ISO country codes from %s ..." % args.isoCountryCodesFile,
@@ -45,8 +46,8 @@ with open(args.isoCountryCodesFile, 'rb') as tsvfile:
             shortCountryName = longCountryName
         iso2countryName[countryCode.lower()] = shortCountryName
         iso2region[countryCode.lower()] = regionCode.lower()
-iso2countryName['unk'] = 'Unknown'
-iso2countryName['oth'] = 'Other'
+#iso2countryName['unk'] = 'Unknown'
+#iso2countryName['oth'] = 'Other'
 print >> sys.stderr, "done"
 
 client = MongoClient()
@@ -194,14 +195,16 @@ for lendingCountryCode in [lcc for lcc in country2country_loans.keys() if lcc !=
                     country2country_loans['oth']['oth'] = country2country_loans[lendingCountryCode][borrowingCountryCode]
                 del country2country_loans[lendingCountryCode][borrowingCountryCode]
 
-lendingCountries = sorted(lendingCountries.keys())
-borrowingCountries = sorted(borrowingCountries.keys())
+# Hardcoded, for convenience
+lendingRegionCodes = ['oth','na','unk','eu','oc','as','sa','af']
+borrowingRegionCodes = ['oth','as','af','sa','na','oc','eu']
+
+# Sort by position in region list (see above), then alphabetically by country code
+lendingCountries = sorted(lendingCountries.keys(), key=lambda x: (lendingRegionCodes.index(iso2region[x]),x))
+borrowingCountries = sorted(borrowingCountries.keys(), key=lambda x:(borrowingRegionCodes.index(iso2region[x]),x))
 
 print "%d lendingCountries: " % len(lendingCountries), lendingCountries
 print "%d borrowingCountries: " % len(borrowingCountries), borrowingCountries
-
-lendingRegionCodes = ['na','eu','oc','as','sa','af','an']
-#borrowingRegionCodes = sorted(isoregionCode2Name.keys())
 
 nodeCounter = 0
 for lendingRegionCode in lendingRegionCodes:
@@ -217,9 +220,15 @@ for lendingCountryCode in lendingCountries:
     nodeCounter += 1
 for borrowingCountryCode in borrowingCountries:
     country2country_loans_for_d3['nodes'].append({'node': nodeCounter,
-                                                  'name': iso2countryName[borrowingCountryCode.lower()],
-                                                  'link': "<a class=\"pathwaysLink\" title=\"No title\" href=\"http://somewhere.com/\"/>"
+                                                  'name': iso2countryName[borrowingCountryCode.lower()]
+#                                                  'link': "<a class=\"pathwaysLink\"/>"
                                                       })
+    nodeCounter += 1
+
+for borrowingRegionCode in borrowingRegionCodes:
+    country2country_loans_for_d3['nodes'].append({'node': nodeCounter,
+                                                  'name': isoregionCode2Name[borrowingRegionCode.lower()]
+                                                  })
     nodeCounter += 1
 
 for i,lendingCountryCode in enumerate(lendingCountries):
@@ -235,11 +244,28 @@ for i,lendingCountryCode in enumerate(lendingCountries):
         except Exception, e:
 #            print >> sys.stderr, str(e)
             pass
-    if lendingCountryCode not in ['oth', 'unk']:
+    if totalLending > 0:
+        # Link from lending region to lending country (simply by means of grouping)
         country2country_loans_for_d3['links'].append({'source':lendingRegionCodes.index(iso2region[lendingCountryCode]),
                                                       'target':len(lendingRegionCodes) + i,
                                                       'value':totalLending})
+    # Link from lending country to borrowing country
     country2country_loans_for_d3['links'].extend(linksToAdd)
+
+for j,borrowingCountryCode in enumerate(borrowingCountries):
+    totalBorrowing = 0
+    for i,lendingCountryCode in enumerate(lendingCountries):
+        try:
+            totalBorrowing += country2country_loans[lendingCountryCode][borrowingCountryCode]
+        except Exception, e:
+#            print >> sys.stderr, str(e)
+            pass
+    if totalBorrowing > 0:
+        # Link from borrowing country to borrowing region (simply by means of grouping)
+        country2country_loans_for_d3['links'].append({'source':len(lendingRegionCodes) + len(lendingCountries) + j,
+                                                      'target':len(lendingRegionCodes) + len(lendingCountries) + len(borrowingCountries) + borrowingRegionCodes.index(iso2region[borrowingCountryCode]),
+                                                      'value':totalBorrowing})
+
 
 country2countryLoanFlowFile = "%s/%s_country2country_loan_flows.json" % (args.outDataDir, args.outBaseName)
 print >> sys.stderr, "Saving result in %s ..." % country2countryLoanFlowFile,

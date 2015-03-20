@@ -122,7 +122,7 @@ $(document).ready(function() {
 			.data(JSON.nodes)
 			.enter().append("g")
 			.attr("class", function(d) {
-				if (d.x == 0 || canDescend) {
+				if (canDescend) {
 					return "node clickable";
 				} else {
 					return "node";

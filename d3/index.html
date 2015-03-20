@@ -1,6 +1,6 @@
 <html>
   <head>
-  <title>Kiva country-to-country loan flow (2012-2014)</title>
+  <title>Kiva microloans, grouped per region and country (2012-2014, combined)</title>
   <!--script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script-->
 
   <!--link rel="stylesheet" type="text/css" href="compact.css" />
@@ -19,8 +19,22 @@
   </head>
 
   <body>
-    <h3>Kiva country-to-country loans (2012-2014)</h3>
-    <div id="careerLink"></div><div id="loanFlowChart"></div>
+    <h1 style="margin-top:20px; margin-bottom:20px;"
+    align="center">Kiva microloans, grouped per region and country
+    (2012-2014, combined)</h1>
+
+    <div id="heading">
+      <div class="header" id="lending_region">Lending Regions</div>
+      <div class="header" id="lending_country">Lending Countries</div>
+      <div class="header" id="borrowing_country">Borrowing Countries</div>
+      <div class="header" id="borrowing_region">Borrowing Regions</div>
+    </div>
+    <div id="loanFlowChart"></div>
+    <p style="text-align:right; margin-right:20px; margin-left:20px;"><small>[This <a href="http://d3js.org/"
+    target="_blank">D3</a> <a href="http://bost.ocks.org/mike/sankey/"
+    target="_blank">Sankey Diagram</a> is inspired
+    by <a href="https://apps.carleton.edu/career/visualize/"
+    target="_blank">Carleton College Career Path]</a></small></p>
   </body>
 
 </html>

@@ -1,27 +1,38 @@
+#heading {
+  margin-left: 20px;
+  height: 20px;
+  width: 95%;
+  border-style: solid;
+  border-color: black;
+  border-width: 0px;
+}
+
+.header {
+  float: left;
+  width:24.5%;
+  height:15px;
+  border-style: solid;
+  border-color: red;
+  border-width: 0px;
+}
+
+#lending_country {
+  text-align: center;
+}
+
+#borrowing_country {
+  text-align: center;
+}
+
+#borrowing_region {
+  float: right;
+  text-align: right;
+}
+
 #loanFlowChart { 
   margin-left: 20px;
   height: 1000px;
   width: 95%;
-}
-
-#careerLink a {
-	text-decoration: none;
-}
-
-#careerLink > div {
-	width: 100%;
-	position: absolute;
-}
-
-#careerLink div .pathwaysLink {
-	font-size: 0.6em;
-	line-height: 0.9em;
-	position: absolute;
-	margin: 0;
-	top: 50%;
-	-webkit-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
-	transform: translateY(-50%);	
 }
 
 g {

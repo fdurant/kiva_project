@@ -1,0 +1,68 @@
+#loanFlowChart { 
+  margin-left: 20px;
+  height: 1000px;
+  width: 95%;
+}
+
+#careerLink a {
+	text-decoration: none;
+}
+
+#careerLink > div {
+	width: 100%;
+	position: absolute;
+}
+
+#careerLink div .pathwaysLink {
+	font-size: 0.6em;
+	line-height: 0.9em;
+	position: absolute;
+	margin: 0;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);	
+}
+
+g {
+	height: 100%;
+	width: 100%;	
+}
+
+.node rect {
+  fill-opacity: .4;
+  shape-rendering: crispEdges;
+}
+
+.node.clickable {
+  cursor: pointer;	
+}
+
+.node.clickable:hover rect {
+  fill-opacity: 0.9;
+}
+
+.node text {
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+  font-size: 0.6em;
+}
+
+.link {
+  fill: none;
+  stroke-opacity: .3;
+}
+
+.link.clickable {
+  cursor: pointer;	
+}
+
+.link.clickable:hover {
+  stroke-opacity: .5;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}

@@ -1,0 +1,124 @@
+/* HTML Resets ******/
+
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, li, blockquote, cite, img {margin: 0; padding: 0; border: none;}
+a:link, a:visited {text-decoration: none;}
+
+/* CARLETON DEFAULT Resets ******/
+
+	/* navigation menu */
+	.navListItem, .navList, .navListTop {margin: 0; padding: 0;}
+	
+	/* minisite search */
+	a.searchSubmitLink, a.searchSubmitLink:hover {border: none; background: none; margin: 0; padding: 0; font-weight: normal;}
+	
+	/* footer */
+	.editDiv {margin: 0; padding: 0;}
+	.editLink {font-weight: normal;}
+	
+	/* mini calendar */
+	div#miniCal, div#miniCal div#events h4, div#miniCal div#events ul, div#miniCal div#events ul li, div#miniCal h3, div#miniCal div.foot p.more   {margin: 0; padding: 0; border: none; background: none; font-weight: normal;}
+
+	/* text only printer friendly */
+	.textOnlyLink {border-top: none; background-position: center left; margin: 0; padding: 0 0 0 20px;}
+	
+	/* blurbs */
+	.blurb {margin-top: 0;}
+
+	/* blog and newsletter */
+	div.publication div.persistent {border-left: none; float: none; width: auto;}
+	div.publication div.moduleNav ul li {border: none; border-top: none;}
+	div.publication div.moduleNav ul.posts {padding: 0; margin: 0;}
+	div.teaserImage {float: none; margin: 0;}
+	div.publication div.moduleNav ul ul.links {list-style-image: none; list-style: disc; margin: 0;}
+	div.feedInfo {margin: 0; text-align: left;}
+	div.feedHelp {margin: 0; text-align: left;}
+	div.publication div.moduleNav ul li h4 {margin-bottom: 0;}
+	div.publication div.fullPost div.primaryContent {float: none; width: 100%;}
+	div.publication div.fullPost div.comments ul li {padding: 0; margin: 0; background: none;}
+	
+	/* show children page */ 
+	ul.childrenList {border: none; margin: 0; padding: 0;}
+
+/* CARLETON BASIC RULES Resets ******/
+
+#breadcrumbs, .locationBarText {
+    background-color: #FFF;
+    color: #000;
+    font-size: 1em;
+    padding: 0;
+    text-align: left;
+}
+#wrapper #breadcrumbs, #wrapper, h4, .smallText, .maintained, .callOut {
+    font-size: 100%;
+}
+
+.callOut {
+    background: none;
+    border: none;
+	padding: 0;
+	margin: 0;
+}
+
+div.assets {
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+div.assets h3 {
+    border-bottom: none;
+    font-size: inherit;
+    margin: 0;
+    padding: 0;
+}
+div.assets ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+div.assets ul li {
+    margin-top: 0;
+}
+div.assets ul li div.name, div.assets ul li div.description {
+    font-size: inherit;
+}
+div.assets ul li div.name {
+    color: inherit;
+    font-style: normal;
+}
+div.assets ul li div.author {
+    font-weight: inherit;
+}
+div.assets ul li div.name strong {
+    font-size: inherit;
+    font-style: inherit;
+}
+div.assets ul li div.author, div.assets ul li div.date {
+    color: inherit;
+    font-size: inherit;
+}
+div.assets ul li div.description {
+    margin-left: inherit;
+}
+div.contentPost div.assets {
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+div.contentPost div.assets h3 {
+    display: none;
+}
+
+div.publication div.fullPost div.relatedItems {
+    clear: both;
+    float: none;
+    width: 100%;
+}
+
+div.publication div.fullPost div.images ul {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}

@@ -1,0 +1,243 @@
+AF	AFG	AS	Afghanistan
+AL	ALB	EU	Albania, People's Socialist Republic of
+DZ	DZA	AF	Algeria, People's Democratic Republic of
+AS	ASM	OC	American Samoa
+AD	AND	EU	Andorra, Principality of
+AO	AGO	AF	Angola, Republic of
+AI	AIA	NA	Anguilla
+AQ	ATA	AN	Antarctica (the territory South of 60 deg S)
+AG	ATG	NA	Antigua and Barbuda
+AR	ARG	SA	Argentina, Argentine Republic
+AM	ARM	AS	Armenia
+AW	ABW	NA	Aruba
+AU	AUS	OC	Australia, Commonwealth of
+AT	AUT	EU	Austria, Republic of
+AZ	AZE	AS	Azerbaijan, Republic of
+BS	BHS	NA	Bahamas, Commonwealth of the
+BH	BHR	AS	Bahrain, Kingdom of
+BD	BGD	AS	Bangladesh, People's Republic of
+BB	BRB	NA	Barbados
+BY	BLR	EU	Belarus
+BE	BEL	EU	Belgium, Kingdom of
+BZ	BLZ	NA	Belize
+BJ	BEN	AF	Benin, People's Republic of
+BM	BMU	NA	Bermuda
+BT	BTN	AS	Bhutan, Kingdom of
+BO	BOL	SA	Bolivia, Republic of
+BA	BIH	EU	Bosnia and Herzegovina
+BW	BWA	AF	Botswana, Republic of
+BV	BVT	AN	Bouvet Island (Bouvetoya)
+BR	BRA	SA	Brazil, Federative Republic of
+IO	IOT	AS	British Indian Ocean Territory (Chagos Archipelago)
+VG	VGB	NA	British Virgin Islands
+BN	BRN	AS	Brunei Darussalam
+BG	BGR	EU	Bulgaria, People's Republic of
+BF	BFA	AF	Burkina Faso
+BI	BDI	AF	Burundi, Republic of
+KH	KHM	AS	Cambodia, Kingdom of
+CM	CMR	AF	Cameroon, United Republic of
+CA	CAN	NA	Canada
+CV	CPV	AF	Cape Verde, Republic of
+KY	CYM	NA	Cayman Islands
+CF	CAF	AF	Central African Republic
+TD	TCD	AF	Chad, Republic of
+CL	CHL	SA	Chile, Republic of
+CN	CHN	AS	China, People's Republic of
+CX	CXR	AS	Christmas Island
+CC	CCK	AS	Cocos (Keeling) Islands
+CO	COL	SA	Colombia, Republic of
+KM	COM	AF	Comoros, Union of the
+CD	COD	AF	Congo, Democratic Republic of
+CG	COG	AF	Congo, People's Republic of
+CK	COK	OC	Cook Islands
+CR	CRI	NA	Costa Rica, Republic of
+CI	CIV	AF	Cote D'Ivoire, Ivory Coast, Republic of the
+CU	CUB	NA	Cuba, Republic of
+CY	CYP	AS	Cyprus, Republic of
+CZ	CZE	EU	Czech Republic
+DK	DNK	EU	Denmark, Kingdom of
+DJ	DJI	AF	Djibouti, Republic of
+DM	DMA	NA	Dominica, Commonwealth of
+DO	DOM	NA	Dominican Republic
+EC	ECU	SA	Ecuador, Republic of
+EG	EGY	AF	Egypt, Arab Republic of
+SV	SLV	NA	El Salvador, Republic of
+GQ	GNQ	AF	Equatorial Guinea, Republic of
+ER	ERI	AF	Eritrea
+EE	EST	EU	Estonia
+ET	ETH	AF	Ethiopia
+FO	FRO	EU	Faeroe Islands
+FK	FLK	SA	Falkland Islands (Malvinas)
+FJ	FJI	OC	Fiji, Republic of the Fiji Islands
+FI	FIN	EU	Finland, Republic of
+FR	FRA	EU	France, French Republic
+GF	GUF	SA	French Guiana
+PF	PYF	OC	French Polynesia
+TF	ATF	AN	French Southern Territories
+GA	GAB	AF	Gabon, Gabonese Republic
+GM	GMB	AF	Gambia, Republic of the
+GE	GEO	AS	Georgia
+DE	DEU	EU	Germany
+GH	GHA	AF	Ghana, Republic of
+GI	GIB	EU	Gibraltar
+GR	GRC	EU	Greece, Hellenic Republic
+GL	GRL	NA	Greenland
+GD	GRD	NA	Grenada
+GP	GLP	NA	Guadaloupe
+GU	GUM	OC	Guam
+GT	GTM	NA	Guatemala, Republic of
+GN	GIN	AF	Guinea, Revolutionary People's Rep'c of
+GW	GNB	AF	Guinea-Bissau, Republic of
+GY	GUY	SA	Guyana, Republic of
+HT	HTI	NA	Haiti, Republic of
+HM	HMD	AN	Heard and McDonald Islands
+VA	VAT	EU	Holy See (Vatican City State)
+HN	HND	NA	Honduras, Republic of
+HK	HKG	AS	Hong Kong, Special Administrative Region of China
+HR	HRV	EU	Hrvatska (Croatia)
+HU	HUN	EU	Hungary, Hungarian People's Republic
+IS	ISL	EU	Iceland, Republic of
+IN	IND	AS	India, Republic of
+ID	IDN	AS	Indonesia, Republic of
+IR	IRN	AS	Iran, Islamic Republic of
+IQ	IRQ	AS	Iraq, Republic of
+IE	IRL	EU	Ireland
+IL	ISR	AS	Israel, State of
+IT	ITA	EU	Italy, Italian Republic
+JM	JAM	NA	Jamaica
+JP	JPN	AS	Japan
+JO	JOR	AS	Jordan, Hashemite Kingdom of
+KZ	KAZ	AS	Kazakhstan, Republic of
+KE	KEN	AF	Kenya, Republic of
+KI	KIR	OC	Kiribati, Republic of
+KP	PRK	AS	Korea, Democratic People's Republic of
+KR	KOR	AS	Korea, Republic of
+KW	KWT	AS	Kuwait, State of
+KG	KGZ	AS	Kyrgyz Republic
+LA	LAO	AS	Lao People's Democratic Republic
+LV	LVA	EU	Latvia
+LB	LBN	AS	Lebanon, Lebanese Republic
+LS	LSO	AF	Lesotho, Kingdom of
+LR	LBR	AF	Liberia, Republic of
+LY	LBY	AF	Libyan Arab Jamahiriya
+LI	LIE	EU	Liechtenstein, Principality of
+LT	LTU	EU	Lithuania
+LU	LUX	EU	Luxembourg, Grand Duchy of
+MO	MAC	AS	Macao, Special Administrative Region of China
+MK	MKD	EU	Macedonia, the former Yugoslav Republic of
+MG	MDG	AF	Madagascar, Republic of
+MW	MWI	AF	Malawi, Republic of
+MY	MYS	AS	Malaysia
+MV	MDV	AS	Maldives, Republic of
+ML	MLI	AF	Mali, Republic of
+MT	MLT	EU	Malta, Republic of
+MH	MHL	OC	Marshall Islands
+MQ	MTQ	NA	Martinique
+MR	MRT	AF	Mauritania, Islamic Republic of
+MU	MUS	AF	Mauritius
+YT	MYT	AF	Mayotte
+MX	MEX	NA	Mexico, United Mexican States
+FM	FSM	OC	Micronesia, Federated States of
+MD	MDA	EU	Moldova, Republic of
+MC	MCO	EU	Monaco, Principality of
+MN	MNG	AS	Mongolia, Mongolian People's Republic
+MS	MSR	NA	Montserrat
+MA	MAR	AF	Morocco, Kingdom of
+MZ	MOZ	AF	Mozambique, People's Republic of
+MM	MMR	AS	Myanmar
+NA	NAM	AF	Namibia
+NR	NRU	OC	Nauru, Republic of
+NP	NPL	AS	Nepal, Kingdom of
+AN	ANT	NA	Netherlands Antilles
+NL	NLD	EU	Netherlands, Kingdom of the
+NC	NCL	OC	New Caledonia
+NZ	NZL	OC	New Zealand
+NI	NIC	NA	Nicaragua, Republic of
+NE	NER	AF	Niger, Republic of the
+NG	NGA	AF	Nigeria, Federal Republic of
+NU	NIU	OC	Niue, Republic of
+NF	NFK	OC	Norfolk Island
+MP	MNP	OC	Northern Mariana Islands
+NO	NOR	EU	Norway, Kingdom of
+OM	OMN	AS	Oman, Sultanate of
+PK	PAK	AS	Pakistan, Islamic Republic of
+PW	PLW	OC	Palau
+PS	PSE	AS	Palestinian Territory, Occupied
+PA	PAN	NA	Panama, Republic of
+PG	PNG	OC	Papua New Guinea
+PY	PRY	SA	Paraguay, Republic of
+PE	PER	SA	Peru, Republic of
+PH	PHL	AS	Philippines, Republic of the
+PN	PCN	OC	Pitcairn Island
+PL	POL	EU	Poland, Polish People's Republic
+PT	PRT	EU	Portugal, Portuguese Republic
+PR	PRI	NA	Puerto Rico
+QA	QAT	AS	Qatar, State of
+RE	REU	AF	Reunion
+RO	ROU	EU	Romania, Socialist Republic of
+RU	RUS	EU	Russian Federation
+RW	RWA	AF	Rwanda, Rwandese Republic
+SH	SHN	AF	St. Helena
+KN	KNA	NA	St. Kitts and Nevis
+LC	LCA	NA	St. Lucia
+PM	SPM	NA	St. Pierre and Miquelon
+VC	VCT	NA	St. Vincent and the Grenadines
+WS	WSM	OC	Samoa, Independent State of
+SM	SMR	EU	San Marino, Republic of
+ST	STP	AF	Sao Tome and Principe, Democratic Republic of
+SA	SAU	AS	Saudi Arabia, Kingdom of
+SN	SEN	AF	Senegal, Republic of
+CS	SCG	EU	Serbia and Montenegro
+SC	SYC	AF	Seychelles, Republic of
+SL	SLE	AF	Sierra Leone, Republic of
+SG	SGP	AS	Singapore, Republic of
+SK	SVK	EU	Slovakia (Slovak Republic)
+SI	SVN	EU	Slovenia
+SB	SLB	OC	Solomon Islands
+SO	SOM	AF	Somalia, Somali Republic
+ZA	ZAF	AF	South Africa, Republic of
+GS	SGS	AN	South Georgia and the South Sandwich Islands
+ES	ESP	EU	Spain, Spanish State
+LK	LKA	AS	Sri Lanka, Democratic Socialist Republic of
+SD	SDN	AF	Sudan, Democratic Republic of the
+SR	SUR	SA	Suriname, Republic of
+SJ	SJM	EU	Svalbard &amp; Jan Mayen Islands
+SZ	SWZ	AF	Swaziland, Kingdom of
+SE	SWE	EU	Sweden, Kingdom of
+CH	CHE	EU	Switzerland, Swiss Confederation
+SY	SYR	AS	Syrian Arab Republic
+TW	TWN	AS	Taiwan, Province of China
+TJ	TJK	AS	Tajikistan
+TZ	TZA	AF	Tanzania, United Republic of
+TH	THA	AS	Thailand, Kingdom of
+TL	TLS	AS	Timor-Leste, Democratic Republic of
+TG	TGO	AF	Togo, Togolese Republic
+TK	TKL	OC	Tokelau (Tokelau Islands)
+TO	TON	OC	Tonga, Kingdom of
+TT	TTO	NA	Trinidad and Tobago, Republic of
+TN	TUN	AF	Tunisia, Republic of
+TR	TUR	EU	Turkey, Republic of
+TM	TKM	AS	Turkmenistan
+TC	TCA	NA	Turks and Caicos Islands
+TV	TUV	OC	Tuvalu
+VI	VIR	NA	US Virgin Islands
+UG	UGA	AF	Uganda, Republic of
+UA	UKR	EU	Ukraine
+AE	ARE	AS	United Arab Emirates
+GB	GBR	EU	United Kingdom
+UM	UMI	OC	United States Minor Outlying Islands
+US	USA	NA	United States of America
+UY	URY	SA	Uruguay, Eastern Republic of
+UZ	UZB	AS	Uzbekistan
+VU	VUT	AS	Vanuatu
+VE	VEN	SA	Venezuela, Bolivarian Republic of
+VN	VNM	AS	Viet Nam, Socialist Republic of
+WF	WLF	OC	Wallis and Futuna Islands
+EH	ESH	AF	Western Sahara
+YE	YEM	AS	Yemen
+ZM	ZMB	AF	Zambia, Republic of
+ZW	ZWE	AF	Zimbabwe
+QS	QS?	AF	South Sudan
+XK	XK?	EU	Kosovo
+ME	ME?	EU	Montenegro
+RS	RS?	EU	Serbia

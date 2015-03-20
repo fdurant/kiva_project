@@ -1,0 +1,796 @@
+@import url(reset.css);
+
+div#careerTopNav {text-transform: uppercase;}
+div#careerTopNav li a, div#careerTopNav li strong {font-size: 1.2em;}
+div#careerTopNav ul.topNav li.current a, div#careerTopNav ul.topNav li.highlighted a {color: #FFF;}
+div#careerTopNav ul.topNav li a {color: #FFF;}
+
+
+div#minisiteNavigation ul.navListTop li a, div#minisiteNavigation ul.navListTop li strong {color: #FFF; color: #3676b3;}
+div#minisiteNavigation ul.navListTop li.current strong {color: #3676b3; color: #333;}
+
+div#content h2.pageTitle {font-weight: 700; color: #588745; font-size: 1.846em; line-height: 1.1;}
+
+div#pageContent {line-height: 1.5;}
+
+
+div.uname_tunnel_login_blurb h3 {padding-bottom: 4px;}
+div#blog li.post div.date, div#blog div.fullPost div.date {color: #a2a2a2;}
+div#blog li.post h4.title, div#blog div.fullPost h3.postTitle {font-size: 1.4em; font-weight: bold;}
+div#blog li.post h4.title a {color: #333;}
+div#blog li.post h4.title a:hover {text-decoration: underline;}
+div#blog div.fullPost div.author {color: #a2a2a2;}
+div#blog div.fullPost .primaryContent h5 {font-size: 1.125em; font-weight: bold; margin-bottom: 1em;}
+div#blog ul.links li a {color: #0b5091; text-decoration: underline; font-size: 1.2em;}
+div.comments h4, div.addCommentForm h4 {font-size: 1.4em; color: #b72628; font-style: italic;}
+div.publication div.fullPost div.comments ul li div.datetime {color: #a2a2a2;}
+
+ul#horizontalFeeds li h3 {font-size: 1.4em; font-weight: bold;}
+div#postContent {font-size: 1.2em;}
+
+#emailUs {font-size: 1em; font-family: 'ProximaNova', Gotham, 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+#emailUs textarea {font-family: 'ProximaNova', Gotham, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1em; color: #333;}
+#emailUs input[type="text"] {font-family: 'ProximaNova', Gotham, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1em; color: #333;}
+#emailUs label[for="who_to_contact"] {font-family: 'ProximaNova', Gotham, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1em; color:  #333; margin-bottom: 5px; padding-left: 8px; display: block; }
+
+div#horizontalEmail h3 {color: #0b5091; font-size: 2.8em;}
+div#horizontalEmail h3 span {color: #0b5091;}
+div#horizontalEmail div.emailInput label {font-style: italic;}
+div#horizontalEmail input[type="submit"] {color: #FFF; font-weight: bold; font-size: 1.3em; text-transform: uppercase; text-align: center;}
+
+div#siteInfo h3 {font-size: 1.8em;}
+div#siteInfo h4 {font-size: 1.2em; font-weight: bold; text-transform: uppercase; letter-spacing: .5px;}
+div#siteInfo h5 {font-size: 1.0em; font-weight: bold;}
+div#siteInfo p {font-size: 1.0em;}
+div#siteInfo ul.infoLinks {font-size: 1.2em;}
+
+div.assets h3 {font-size: 1.3em;}
+
+/* GENERAL STRUCTURE */
+
+body {background-color: #fff;}
+div#wrapperOuter {margin: 0 20px;}
+div#wrapperInner {min-width: 960px; max-width: 1200px; margin: 0 auto 6px;}
+div#siteTrivia, div#adminStuff {min-width: 920px; max-width: 1200px; margin: 0 auto;}
+div#breadcrumbs, div#bannerAndMeat, div#postContent, div#footer {background: #fff; padding: 20px 20px 0 20px;}
+div#footer {min-width: 960px; max-width: 1200px; padding: 0;}
+body div#wrapper div#breadcrumbs {display: none; padding-top: 0;}
+div#bannerAndMeat {padding-top: 0;}
+div#careerBanner {position: relative; top: 0; right: 0; zoom: 1;}
+div#adminStuff { background:transparent; padding-bottom:2em; }
+div#minisiteNavigation, div#subNav, p.textOnlyLink {margin-right: 20px;}
+p.textOnlyLink {margin-bottom: 20px;}
+div#adminStuff {margin-bottom: 6px;}
+
+/* column floats */
+div#content {float: right; width: 100%;}
+div#meat div#content {width: 100%;}
+div#navigation {float: right; width: 25%;}
+
+div#meat.containsConNav div#content {width:75%;}
+* html div#meat.containsNavigation div#content {display: inline;}
+
+div#contentWrapper {width: 100%;}
+div#contentWrapper.hasSidebar {float: left; width: 66.66%;}
+div#sidebarWrapper {width: 25%; width: 33.33%; float: left;}
+div#contentWrapper.hasSidebar.news {width: 75%;}
+div#sidebarWrapper.news {float: left; width: 25%;}
+div#meat.containsConNav div#contentWrapper.hasSidebar {width:66.66%;}
+div#meat.containsConNav div#sidebarWrapper {width: 33.33%; float: left;}
+
+div.contentPost, div.contentMain {padding-top: 16px;} /* padding below the page title line */
+div.contentMain div.contentMain {padding-top: 0;}
+
+/* BANNER */
+div#careerBanner h1 {float: left; font-size: 2.5em; font-weight: 100;}
+div#careerBanner h1 a {padding: 28px 0px 16px 0px; display: block; position: relative; z-index: 10;}
+div#careerBanner h3 {display: none;}
+
+ul#aboutAndLogin {position: absolute; top: 2em; right: 0; background: #7ca6ce; padding: 10px 0;}
+ul#aboutAndLogin li {list-style-type: none; float: left;}
+ul#aboutAndLogin li a {padding: 10px 8px; border-right: 1px solid #fff; color: #fff;}
+ul#aboutAndLogin li a:active, ul#aboutAndLogin li a:hover {color: #000;}
+ul#aboutAndLogin span.loggedIn  {padding-left: 8px;}
+ul#aboutAndLogin span.name {font-weight: bold;}
+ul#aboutAndLogin li.loginMessage {margin-right: 0;}
+
+/* TOP NAVIGATION */
+div#careerTopNav {clear: both; margin-bottom: 20px; font-size: 12px; background: #79bcc9; background: #cdddec;}
+div#careerTopNav ul#audiences {float: left;}
+div#careerTopNav ul#other {float: right;}
+div#careerTopNav ul.topNav li {list-style-type: none; float: left;}
+div#careerTopNav ul.topNav li a {padding: 14px 20px 10px 20px; display: block; border-right: 1px solid #8dcad6; border-right-color: #c7e3e9; border-left: 1px solid transparent; background: #3676b3;}
+div#careerTopNav ul.topNav li a:focus {outline: none;}
+div#careerTopNav ul.topNav li a:hover {background: #7ca6ce;}
+div#careerTopNav ul.topNav li a:active {position: relative; top: 1px; padding-bottom: 8px; border-top: 1px solid #4894a2; border-left: 1px solid #4894a2;}
+div#careerTopNav ul.topNav li.current a, div#careerTopNav ul.topNav li.highlighted a {background: #7ca6ce;}
+div#careerTopNav ul.topNav li.current a:hover {cursor: default; background: #7ca6ce;}
+div#careerTopNav ul.topNav#other {border-left: 1px solid #8dcad6; border-left-color: #c7e3e9;}
+
+/* TEXT ONLY */
+p.textOnlyLink {background-color: #F9F8F5; background-position: 8px; padding: 6px; padding-left: 24px;}
+p.textOnlyLink a {color: #999;}
+
+/* PAGES */
+div#content h2.pageTitle {border-bottom: 1px solid #e6e5e3; padding-bottom: 10px;}
+
+/* CHLDREN AND SIBLING STYLES */
+div#contentWrapper div.contentPost ul.childrenList, div#contentWrapper div.contentPost ul.siblingList {margin-left: 0; margin-top: 0;}
+div.contentPost ul.childrenList li, div.contentPost ul.siblingList li {margin-bottom: 16px;}
+div#contentWrapper ul.childrenList ul {margin-left: 0; padding-bottom: 0;}
+div.contentPost ul.childrenList ul li {margin-bottom: 0; padding-top: 8px;}
+div.contentPost ul.childrenList ul li a {text-decoration: underline;}
+div.contentPost ul.childrenList h4, div#pageContent ul.childrenList h4, div.contentPost ul.siblingList strong, div.contentPost ul.siblingList a {font-size: 1.2em; padding-bottom: 0px;}
+div.contentPost ul.childrenList h4 a, div.contentPost ul.siblingList a {text-decoration: underline;}
+div.contentPost ul.childrenList h4, div#pageContent ul.childrenList h4, div.contentPost ul.siblingList strong {}
+div#contentWrapper div.contentPost ul.childrenList .childDesc p {padding-bottom: 0;}
+
+/* PROGRAMS HOME */
+div.programs h3 {display: none;}
+div.programs ul#programs {margin: 0;}
+div.programs ul#programs li {list-style-type: none;}
+div.programs ul#programs li.program {width: 49%; float: left; padding: 20px 0;}
+div.programs ul#programs li.odd {clear: left;}
+div.programs ul#programs li.program div.imgWrapper {float: left; width: 137px;}
+div.programs ul#programs li.program img {padding: 4px; background: #FFF; border: 1px solid #e6e5e3;}
+div.programs ul#programs h4, div.programs ul#programs p, div.programs ul#programs ul.audienceLinks {margin-left: 174px; margin-right: 20px;}
+div.programs ul#programs h4 {margin-bottom: 12px;}
+div.programs ul#programs ul.audienceLinks li {float: left;}
+div.programs ul#programs ul.audienceLinks li a {margin-right: 18px; padding-right: 12px; background: url(images/raquo.png) no-repeat right center;}
+
+/* PROGRAMS VOLUNTEER SIGNUP */
+div#volunteerWrapper {border: 1px solid #DADADA; padding: 1.2em 1.4em; padding-bottom: .75em}
+div#volunteerWrapper h3 {margin-bottom: .5em; font-weight: bold;}
+div#contentWrapper div#volunteerWrapper p {padding-bottom: .5em;}
+div#volunteerWrapper form {padding-bottom: 1em; padding: 0 0 .8em 0; border-bottom: 1px dotted #ccc; margin-bottom: .5em;}
+div#volunteerWrapper input#volunteerSignupBox, div#volunteerWrapper label {padding-right: .5em;}
+
+/* WYSIWYG STYLES */
+div.hasSidebar div#pageContent {padding-right: 20px;}
+div#pageContent h3, div.contentMain h3, div#pageContent h4, div.blurbs h3, div.blurbs h4 {font-weight: bold;}
+div#pageContent h3, div.contentMain h3, div.blurbs h3 {font-size: 1.4em;}
+div#pageContent h4, div.publication h4, div.blurbs h4 {font-size: 1.2em; padding-bottom: 8px; font-weight: bold;}
+div#contentWrapper p, div#contentWrapper ul, div#contentWrapper ol, div.commentContent ul, div.commentContent ol {padding-bottom: 12px;}
+div#contentWrapper ul, div#contentWrapper ol, div.commentContent ul, div.commentContent ol {margin-left: 3em;}
+div#contentWrapper ul li, div#contentWrapper ol li, div.commentContent ul li, div.commentContent ol li {padding-bottom: .5em;}
+blockquote {padding: 12px 16px 0 36px; margin: 0 24px 12px; border-top: 1px solid #e6e5e3; border-bottom: 1px solid #e6e5e3; background: url(images/blockquote.gif) no-repeat left 12px;}
+div.blurbs blockquote {margin: 0 0 12px 0;}
+div.callOut {background: #cdddec; border: 1px solid #aed0d3; padding: 12px 16px 0; margin-bottom: 12px;}
+div#contentWrapper object {margin-bottom: 16px;}
+
+img {max-width: 100%; height:auto;}
+div.primaryContent div.text img {padding: 4px; border: 1px solid #E6E5E3; margin-bottom: 16px;}
+div#pageContent img, div.primaryContent div.text img {margin: 0 0 16px 0; border: 1px solid #E6E5E3; padding: 5px;}
+div#pageContent img[align="right"], div.primaryContent div.text img[align="right"], div.blurbs img[align="right"] {margin: 0 0 16px 22px;}
+div#pageContent img[align="left"], div.primaryContent div.text img[align="left"], div.blurbs img[align="left"] {margin: 0 22px 16px 0;}
+
+div#pageContent a, div.primaryContent a {text-decoration: underline;}
+
+div#pageContent table {border-collapse:collapse; margin: 10px 0;}
+div#pageContent table tr, div#pageContent table td, div#pageContent table thead tr th, div.primaryContent table tr, div.primaryContent table td, div.primaryContent table thead tr th {border: 1px solid #ccc; padding: 4px;}
+
+form#disco_form table {border: none;}
+
+/* TUNNEL LOG IN PAGE */
+table#tunnel {width: 100%; table-layout: fixed; margin-bottom: 2em; border: 1px solid #CCC; border-width: 0 0 1px 1px; text-align: left;}
+table#tunnel th#posted, table#tunnel td.posted {width: 15%;}
+table#tunnel th#title, table#tunnel td.title {width: 20%;}
+table#tunnel th#type, table#tunnel td.type {width: 20%;}
+table#tunnel th#deadline, table#tunnel td.deadline {width: 20%;}
+table#tunnel th, table#tunnel td {padding: .5em .8em; border-style: solid; border-width: 1px 1px 0 0; border-color: #DADADA; overflow: hidden;}
+
+div.blurbs div.uname_tunnel_login_blurb {border: 1px solid #DADADA; padding: 1.2em 1.4em;}
+div.uname_tunnel_login_blurb h3 {}
+div.uname_tunnel_login_blurb a.redButton {padding: .6em .8em; text-transform: uppercase; font-size: 1.2em;}
+div.uname_tunnel_login_blurb div.submit {margin-bottom: 1em;}
+div.blurbs div.submit p {padding: 0;}
+div.uname_tunnel_login_blurb p {font-size: 1em;}
+div.uname_tunnel_login_blurb p.note {border-top: 1px dotted; font-size: .8em; padding-top: 1em; padding-bottom: 0;}
+
+/* STAFF PAGE */
+div#facultyStaff {margin-right: 16px; margin-bottom: 16px;}
+div#deptInfo {display: none;}
+div#facultyStaff .facStaff {margin: 0; padding: 15px 0 15px 0; border-bottom: none; border-top: 1px solid #e6e5e3;}
+div#facultyStaff .facStaffInfo {margin-left: 0; margin-bottom: 0;}
+.facStaffImage {float: right; margin-left: 10px; margin-right: 10px; padding: 5px;}
+
+/* NEWS BLOG */
+div.publication div.persistent {border-left: 1px solid #E6E5E3; float: right; width: 25%; position: relative; top: -16px;}
+div.publication div.persistent div.filters {padding: 20px;}
+div.publication div.persistent div.filters ul {padding: 0; margin: 0;}
+div.persistent div.loginlogout, div.persistent div.addItemLink, div.persistent div#filtering form.searchForm {display: none;}
+
+div#blog div.moduleNav {width: 74%; float: left;}
+div#contentWrapper div#blog ul.posts {margin: 0 20px 0 0; padding-bottom: 0;}
+div#blog li.post, div#blog div.fullPost div.primaryContent {position: relative; margin-bottom: 20px; clear: both; border-bottom: 1px dotted #e6e5e3; padding-bottom: 20px; padding-top: 18px;}
+div#blog li.post div.date, div#blog div.fullPost div.date {position: absolute; top: 0; left: 0;}
+div#blog li.post div.teaserImage {float: right; margin: 0 0 10px 24px; padding: 4px; border: 1px solid #e6e5e3;}
+div#blog div.moduleNav div.feedLink {margin-bottom: 20px;}
+
+div#blog div.fullPost h3.postTitle {margin-bottom: 10px;}
+div#blog div.fullPost div.author {padding-bottom: 16px;}
+
+div#blog ul.links {margin: 0; padding: 0;}
+div#blog ul.links li {list-style-type: none;}
+div#blog ul.links li.permalink, div#blog ul.links li.comments {display: none;}
+div#blog ul.links li.more {display: inline-block; background: url(images/raquo.png) no-repeat right center; padding-right: 12px;}
+
+div#blog div.fullPost {float: left; width: 74%;}
+div#blog div.fullPost.hasRelated div.primaryContent {float: left; width: 72.5%; margin-right: 2.5%; margin-bottom: 0; border-bottom: none;}
+div#blog div.fullPost div.relatedItems {border-left: 1px solid #e6e5e3; clear: none; float: left; width: 24%; margin-top: -16px;}
+div#blog div.fullPost div.relatedItems ul {margin: 0; padding: 0;}
+div#blog div.fullPost.noRelated div.primaryContent {float: left; width: 97.5%; margin-right: 2.5%; margin-bottom: 0; border-bottom: none;}
+
+div.pagination {margin-bottom: 16px;}
+div.feedInfo {float: left; margin-right: 12px;}
+
+/* BLOG RELATED SLIDEBAR */
+div#blog div.relatedItems h4 {padding-bottom: 4px;}
+div#blog div.relatedItems div.images, div#blog div.relatedItems div.assets, div#blog div.relatedItems div.categories {padding: 16px 0 0 16px;}
+div#blog div.relatedItems div.images div.tnImage {border: 1px solid #E6E5E3; padding: 5px;}
+div#blog div.relatedItems div.images div.tnImage img {width: 100%; height: auto;}
+div#blog div.relatedItems div.images ul li, div#blog div.relatedItems div.assets ul li {padding-bottom: 12px;}
+div#blog div.relatedItems div.assets ul li {list-style-type: none; background: #e6e5e3; margin-bottom: 6px; padding: 4px 6px;}
+div#blog div.relatedItems div.assets ul li a {border-bottom: 1px dotted; margin-right: 6px;}
+div#blog div.relatedItems div.assets div.date {display: none;}
+
+/* COMMENTS */
+div#blog div.comments h4, div#blog div.addCommentForm h4 {margin-bottom: 12px;}
+div#blog div.comments ul {margin: 0 0 24px 0; padding: 0; border-top: 1px solid #e6e5e3;}
+div#blog div.comments ul li {border-bottom: 1px solid #e6e5e3; padding: 24px 6px 12px 6px;}
+div#blog div.comments div.commentContent li {border: none; padding: 0;}
+div#blog div.comments ul li div.author {font-family: 'CartoGothicProBold'; margin-bottom: 12px; font-size: 1.1em;}
+div#blog div.back {border-top: 1px dotted #e6e5e3; border-bottom: 1px dotted #e6e5e3; padding: 8px 6px 8px 18px; margin: 24px 0 40px 0; background: url(images/laquo.gif) no-repeat 6px center;}
+
+form#disco_form, table#discoTable, table#discoTable tbody {width: 100%; border: none;}
+form#disco_form td, table#discoTable td {border: none;}
+div#blog div.addCommentForm form input[type="text"] {border: 1px solid #e6e5e3;}
+div#blog div.addCommentForm form div.loki {border: 1px solid #e6e5e3; background: transparent;}
+div#blog div.addCommentForm form .loki div.iframe_wrapper, div.addCommentForm form .loki textarea {background-color: transparent; border: 1px solid #e6e5e3; height: 276px; width: 100%;}
+
+div#blog div.addCommentForm table#discoTable .loki {border: medium none;padding: 0;width: 95%;}
+div#blog div.addCommentForm table#discoTable tr {border: 1px solid;}
+div#blog div.addCommentForm table#discoTable td.element {padding: 6px 6px 6px 16px;}
+div#blog div.addCommentForm table#discoTable input[type="text"] {padding: 8px;width: 196px;}
+div#blog div.addCommentForm table#discoTable .loki .toolbar {margin-bottom: 10px;}
+div#blog div.addCommentForm table#discoTable .loki .toolbar a {background: transparent;border: medium none;margin: 2px 4px 2px 0;padding: 6px;vertical-align: top;}
+
+/* FORMS */
+form#disco_form {border-bottom: 1px solid #DADADA; border-top: 1px solid #DADADA; margin-bottom: 20px;}
+form#disco_form table#discoTable, form#disco_form table.thorTable {padding: 14px;}
+form#disco_form tr#requiredtextRow td, form#disco_form tr#requiredtextRow td p {padding: 0;}
+form#disco_form table#discoTable textarea, form#disco_form table#discoTable input[type="text"] { width: 100%; max-width: 100% !important;border:1px solid #DADADA;}
+
+/* thor table */
+table.thorTable tr td {padding: 6px;}
+table.thorTable input[type="text"], table.thorTable textarea {padding: 4px 4px; border: 1px solid #DADADA;}
+table.thorTable div.radioButtons tr td, div.checkBoxGroup tr td {padding-top: 0;}
+td.words {font-weight: bold;}
+
+/* disco table */
+table#discoTable tr {}
+table#discoTable td {padding: 6px 6px 6px 16px;}
+table#discoTable input[type="text"] {padding: 2px 4px;}
+
+/* EVENTS */
+div#calendar div.nav {background-color: #3676b3;}
+div#calendar div.views ul li a {background-color: #cdddec; color: #0000CC;}
+div#calendar div.views ul li strong {background-image: none; background-color: #3676b3;}
+div#calendar div.views ul li a, div#calendar div.views ul li strong, div#calendar div.views h4 {display: block; padding: 0.5em 1em;}
+div#calendar div.gridAndOptions {border: none;}
+div.calendarGrid {border: 1px solid #DADADA;}
+div#calendar div.calendarGrid td.currentlyViewing {background-color: #CCC; color: #000000;}
+div#calendar div.calendarGrid td.today {background-color: transparent; border: 1px solid #DADADA;}
+div#calendar div.calendarGrid td.currentlyViewing a {color: #333;}
+div#calendar div#events h3 {clear: none; color: #666; font-style: normal; font-weight: normal; margin-bottom: 10px; margin-top: 1.5em;}
+div#calendar div#events, div#calendar div.foot {margin-bottom: 24px;}
+div#calendar div.options ul {list-style-image: none;}
+div#calendar div.iCalExport {margin-bottom: 6px;}
+div#calendar div.feedInfo {float: none; margin-right: 12px;}
+div#calendar div.eventDetails h3 {margin-bottom: 18px;}
+div#calendar div.eventDetails p.back {border: 1px solid #DADADA;}
+
+/* ENGAGEMENT WANTED */
+div#engagementWantedSearch table hr {}
+div#engagementWantedSearch table tr td {padding: .75em 1em;}
+div#engagementWantedSearch table#discoTable tr td {padding: .5em;}
+div#engagementWantedSearch span.profile_name {font-size: 1.2em; padding-right: .5em;}
+div#engagementWantedSearch span+hr {display: block; margin-top: .8em; margin-bottom: .8em;}
+div#engagementWantedSearch span+hr+hr {display: block; margin-top: .9em; margin-bottom: .9em;}
+div#engagementWantedSearch em {font-weight: bold; padding-right: .2em;}
+div#engagementWantedSearch #engagementWantedSearchFilters {width: 100%; padding: 0;}
+div#engagementWantedSearch h3 {margin-bottom: 16px;}
+
+/* BLURBS */
+div.blurb {padding: 0 1em 1em 1em; margin-bottom: 1em;}
+div.blurbs p, div.blurbs ol, div.blurbs ul {padding-bottom: 1em;}
+div.blurbs ol, div.blurbs ul {margin-left: 18px;}
+div.blurbs h4, div.blurbs h5 {font-weight: bold;}
+div.blurb{
+  	border: 1px solid #DADADA;
+  	font-size: 1em;
+  	padding-top: 1em;
+}
+
+/* RELATED (SIDEBAR) */
+div#sidebarWrapper div.noBorder {border-left: none; padding: 16px 0 0 0;}
+
+div.noBorder div.sidebarSection {margin-left: 20px;}
+div.sidebarSection {margin-bottom: 12px; padding-bottom: 12px;}
+
+/* RELATED DOCUMENTS */
+div#sidebarContent div.sidebarSection div.assets {padding: 6px 8px;}
+div#sidebarContent div.sidebarSection div.assets h3 {border-bottom: 1px solid #e6e4db; padding: 6px 0; margin: 0;}
+div#sidebarContent div.sidebarSection div.assets ul li {padding-top: 12px;}
+
+/* SIDEBAR IMAGES */
+div.sidebarSection div.imageChunk img {width: 100%; height: auto; padding: 0;}
+div.sidebarSection div.imageChunk div.tnImage {padding: 5px; border: 1px solid #e6e5e3; }
+div.sidebarSection div.tnDesc {margin-top: 4px;}
+
+/* FEATURED SIDEBAR */
+/*  these styles exist in the extra head content of the pages that use features.  snag them here in case the db gets trashed 
+
+<style type="text/css">
+
+div.featuresModule { width: 100%; position: relative; padding-bottom: 71%; height: 0; overflow: hidden;}
+div.featuresModule ul.features { width 100%; height: auto;}
+div.featuresModule .features .sizable { width: 100%; height: auto; } 
+div.featuresModule li.feature img { max-width: 100%; height: auto;}
+
+</style>
+
+*/
+
+div.featuresModule { width: 100%; position: relative; padding-bottom: 71%; height: 0; overflow: hidden;}
+div.featuresModule ul.features { width: 100%; height: auto;}
+div.featuresModule .features .sizable { width: 100%; height: auto; } 
+div.featuresModule li.feature a {height: auto !important;}
+div.featuresModule li.feature img { max-width: 100%; height: auto;}
+
+div#sidebarContent div.featuresModule h3 {margin-bottom: .2em;}
+div#sidebarContent div.featuresModule h3.featureTitle a {color: #FFF;}
+
+/* FEEDS (general - both footer feeds & sidebar feeds) */
+ul#jobsFeed li.job, ul#twitterFeed li.tweet, ul#newsFeed li.post, ul#eventsFeed li.date h4, ul#eventsFeed ul.events {padding-bottom: 10px;}
+ul#eventsFeed ul.events {margin: 0; padding: 0 0 10px;}
+div#contentWrapper ul#jobsFeed, div#contentWrapper ul#twitterFeed, div#contentWrapper ul#newsFeed, div#contentWrapper ul#eventsFeed {margin: 0;}
+ul#jobsFeed li, ul#twitterFeed li, ul#newsFeed li, ul#eventsFeed li {list-style-type: none;}
+
+div#contentWrapper h3.feedName {font-size: 1.4em; margin-bottom: 12px; font-weight: bold;}
+div#contentWrapper h3.feedName a {color: #666;}
+
+
+/* FEEDS SIDEBAR */
+div#sidebarContent div.sidebarSection {border-bottom: 1px solid #e6e5e3;}
+div#sidebarContent.noBorder div.sidebarSection {border-bottom: none;}
+div#sidebarContent {padding: 16px; border-left: 1px solid #e6e5e3;}
+div#sidebarContent ul li {list-style-type: none;}
+div#sidebarContent h3 {font-size: 1.4em; margin-bottom: 12px; font-weight: bold;}
+div#sidebarContent h3 a {color: #666;}
+div#sidebarContent li.date h4 {text-transform: uppercase;}
+
+div#sidebarContent div#miniCal div#events {padding: 0 0 10px;}
+div#sidebarContent div#miniCal div#events h4, div#sidebarContent div#miniCal div#events ul {font-size: 100%;}
+div#sidebarContent div#miniCal div#events div.dayblock li.event {padding-bottom: 10px;}
+
+/* BLOG CATEGORY SIDEBAR */
+div#contentWrapper div.publication div#filtering div.filters ul {margin-left: 0;}
+
+div.publication div#filtering div.filters ul li,
+div#sidebarContent ul#blogCategories li, div.relatedItems div.categories ul li {list-style-type: none; background: url(images/bullet.gif) no-repeat left 10px; padding: 4px 0 4px 12px;}
+
+div#filtering div.feedSubscribe {padding: 20px; padding-top: 0;}
+
+/* FEEDS FOOTER */
+ul#horizontalFeeds {padding-bottom: 20px; font-size: 80%;}
+ul#horizontalFeeds li {list-style-type: none;}
+ul#horizontalFeeds li.feed {float: left;}
+ul#horizontalFeeds.col1 li.feed {width: 99.89%;}
+ul#horizontalFeeds.col2 li.feed {width: 49.89%;}
+ul#horizontalFeeds.col3 li.feed {width: 33.22222%;}
+ul#horizontalFeeds.col4 li.feed {width: 24.89%; }
+ul#horizontalFeeds li h3 {padding: 10px 10px 0;}
+ul#horizontalFeeds li h3 a {text-decoration: none; color: #333;}
+ul#horizontalFeeds li ul {padding: 10px 10px 0;}
+
+ul#horizontalFeeds li p.more {padding: 10px 10px 0;}
+
+/* NEWS BLOG FEED */
+ul#horizontalFeeds li.feed ul.pubLinks li {margin-top: 0;}
+li.feed div#relatedPub ul.posts {margin: 0;} 
+li.feed div#relatedPub ul.posts li.post {padding: 0 0 10px; margin: 0;}
+li.feed div#relatedPub ul.posts li.post h4.title {margin-bottom: 1em;}
+li.feed div#relatedPub ul.posts li.post div.date {font-size: 1em;}
+li.feed div#relatedPub ul.posts li.post div.desc {clear: both;}
+
+/* JOBS FEED */
+li.feed li.job span.date {color: #a2a2a2;}
+
+/* TWITTER FEED */
+li.tweet span.date {display: block; color: #a2a2a2;}
+
+/* EVENTS FEED */
+li.feed div#miniCal h3 a {color: #666; text-decoration: none;}
+li.feed div#miniCal div#events {padding: 10px 10px 0;}
+li.feed div#miniCal div#events div.dayblock li.event {padding-bottom: 10px;}
+li.feed div#miniCal div#events ul {font-size: 100%;}
+li.feed div#miniCal div#events div.dayblock h4.day {font-size: 100%; text-transform: uppercase;}
+li.feed div#miniCal div.foot {margin-left: 10px;}
+
+/* EMAIL FORMS */
+div#formHeading {margin-right: 20px; margin-bottom: 12px;}
+div#formWrapper {margin-right: 20px;}
+div.sidebarSection div#formWrapper {margin-right: 0;}
+
+div.formHeading h3 {color: #b72628;}
+div.formHeading h3 span {color: #333;} 
+
+div#formWrapper p.error {padding: 8px 10px; background: #ee6364; border: 1px solid #b72628; color: #FFF; margin-bottom: 6px;}
+div#formWrapper p.thanks {padding: 8px 10px; background: #3676b3; color: #FFF; margin-bottom: 6px;}
+
+form#emailUs {width: 100%;}
+form#emailUs label[for="question"], form#emailUs label[for="your_email"] {text-indent: -9999em; display: none;}
+form#emailUs div.textarea div.inner, form#emailUs div.emailAndSubmit div.emailInput {background: #FFF; border: 1px solid #e6e4db; padding: 8px; margin-bottom: 16px;}
+form#emailUs div.emailAndSubmit div.whoInput {margin-bottom: 16px;}
+form#emailUs div.emailAndSubmit div.submit {margin-bottom: 16px; width: 50%;}
+form#emailUs textarea, form#emailUs input, form#emailUs input[type="submit"] {width: 100%; padding: 0; margin: 0; border: none;}
+form#emailUs textarea {height: 90px;}
+form#emailUs input[type="submit"] {display: block; padding: 8px;}
+form#emailUs input[type="submit"]:hover {cursor: pointer;}
+form#emailUs select#who_to_contact {width: 100%;}
+form#emailUs div.tarBaby {display:none;}
+
+/* FOOTER */
+div#siteInfo {background: #3676b3; color: #fff;}
+ul.infoLinks a {color: #fff;}
+ul.infoLinks a:active, ul.infoLinks a:hover {text-decoration: underline;}
+div#siteInfo h3 {padding: 10px 20px; display: inline-block; float: left; font-weight: bold; color: #fff;}
+div#siteInfo h4 {margin-bottom: 4px;}
+div#siteInfo ul.infoLinks {padding: 17px; padding-left: 0; float: left; font-weight: bold;}
+div#siteInfo ul.infoLinks li {display: inline; padding: 4px 12px;}
+div#siteInfo a#aboutUs {/*float: right; padding: 14px 20px;*/}
+div#siteInfo ul#centerInfo {clear: both; background: #cdddec; padding: 0; border-top: 1px solid #fff; color: #333;}
+div#siteInfo ul#centerInfo a {color: #000;}
+div#siteInfo ul#centerInfo li#centerHours h5 + h5 {margin-top: 1em;}
+div#siteInfo form.searchForm {float: right; padding: 17px;}
+div#siteInfo form.searchForm a.searchSubmitLink {background: #cdddec; color: #333; padding: 3px 4px;}
+ul#centerInfo li {width: 33%; min-height: 175px; float: left; list-style-type: none; padding-top: 20px; padding-bottom: 8px;}
+ul#centerInfo li:last-child {border-right: none;}
+ul#centerInfo li h4, ul#centerInfo li h5, ul#centerInfo li p {padding-right: 20px; padding-left: 20px;} 
+ul#centerInfo p {padding-bottom: 12px;}
+ul#centerInfo li#socialMedia h5 a {color: #000;}
+
+ul#centerInfo li#socialMedia h5 {padding: 0 20px 24px;}
+ul#centerInfo li#socialMedia img {position: relative; top: 10px; padding-right: 12px;}
+
+div#maintainer {padding-top: 20px;}
+
+.loginLinkModule>* {
+	margin-top:0.5em;
+}
+
+/* RED BUTTONS */
+div#slideshow ul.buttons li.more, 
+div.submit {border: 1px solid #ac1818; -webkit-border-radius: 6px; -moz-border-radius: 6px; border-radius: 6px;}
+
+div#slideshow ul.buttons li.more a, 
+form#emailUs input[type="submit"], 
+div#horizontalEmail input[type="submit"],
+#volunteerSignup input[type="submit"],
+a.redButton {
+	display: block; 
+	text-align: center; 
+	color: #FFF !important; 
+	background: #ee6364; 
+	border-top: 1px solid #f28384; 
+	border-left: 1px solid #f28384;
+	border-right: none;
+	border-bottom: none; 
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+div#slideshow ul.buttons li.more a:hover, a.redButton:hover, #volunteerSignup input[type="submit"]:hover {
+	background: #ea4848;
+	cursor: pointer;
+}
+
+#volunteerSignup input[type="submit"] {display: inline; padding: .5em .75em;}
+
+/* INTERNSHIP BROWSER RULES */
+#internshipBrowserSearch h4 { margin-bottom: .5em; font-size: 15px; }
+#internshipBrowserSearch h3 { margin-top: .4em; margin-bottom: .4em; font-size: 18px; }
+
+div#slideshow ul.buttons li.more a:active, a.redButton:active {background: #ea4848; border-left-color: #bb1e1e; border-top-color: #bb1e1e;}
+div#slideshow ul.buttons li.more a:focus, a.redButton:focus {outline: none;}
+
+/* SELF-CLEARING ELEMENTS */
+div#bannerAndMeat:after, 
+div#careerBanner:after,
+div#careerTopNav:after, 
+div.programs ul#programs:after, 
+div.programs li.program:after,
+ul.childrenList li:after, 
+div#blog li.post:after, 
+div.facStaff:after,
+div#horizontalEmail:after,
+div.emailAndSubmit div.submit:after, 
+form#emailUs:after, 
+#horizontalFeeds:after, 
+ul#centerInfo:after,
+ul#aboutAndLogin:after,
+ul#centerInfo li#socialMedia:after {
+	content: "."; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+	}
+
+div#bannerAndMeat, 
+div#careerBanner,
+div#careerTopNav, 
+div.programs ul#programs, 
+div.programs li.program, 
+ul.childrenList li, 
+div#blog li.post, 
+div.facStaff,
+div#horizontalEmail, 
+div.emailAndSubmit div.submit,
+form#emailUs, 
+ul#horizontalFeeds, 
+ul#centerInfo,
+ul#aboutAndLogin,
+ul#centerInfo li#socialMedia {
+	display: inline-block;
+	}
+	
+div#bannerAndMeat, 
+div#careerBanner,
+div#careerTopNav, 
+div.programs ul#programs, 
+div.programs li.program, 
+ul.childrenList li, 
+div#blog li.post, 
+div.facStaff,
+div#horizontalEmail, 
+div.emailAndSubmit div.submit,
+form#emailUs, 
+ul#horizontalFeeds, 
+ul#centerInfo,
+ul#aboutAndLogin,
+ul#centerInfo li#socialMedia {
+	display: block;
+	}
+	
+@media only screen and (max-width : 1100px) {	
+	/* TOP NAVIGATION */
+	div#careerTopNav {}
+	div#careerTopNav ul.topNav li a {}
+}
+	
+@media only screen and (max-width : 959px) {	
+	/* GENERAL STRUCTURE */
+	div#wrapperOuter {margin: 0 10px;}
+	div#wrapperInner {max-width: 959px; min-width: 601px;}
+	div#siteTrivia, div#adminStuff {max-width: 939px; min-width: 589px;}
+	div#breadcrumbs, div#bannerAndMeat, div#postContent {padding: 10px 10px 0 10px;}
+	div#footer {max-width: 959px; min-width: 601px;}
+
+	/* column floats */
+	div#navigation {float: right; width: 33.33333%;}
+	div#meat.containsConNav div#content {width:66.5%;}
+	
+	/* BANNER */
+	div#careerBanner h1 a {padding: 4px 0px 28px 0px;}
+	div#careerBanner h2 {top: 40px;}
+	
+	ul#aboutAndLogin {top: 18px; padding: 7px 0;}
+	ul#aboutAndLogin li a {padding: 7px 8px;}
+	
+	/* TOP NAVIGATION */
+	div#careerTopNav {margin-bottom: 10px; font-size: 11px;}
+	div#careerTopNav ul.topNav li a {padding: 14px 16px 10px}
+	span.loggedIn span.message {display: none;}	
+
+	/* SLIDESHOW */
+	div#slideshow {display:none;}
+	
+	/* HOME PAGE */	
+	div.programs ul#programs li.program div.imgWrapper {float: left; margin: 0 20px 0 0; width: 100px;}
+	div.programs ul#programs li.program img {width: 100%; height: auto;}
+	div#contentWrapper div.programs ul#programs h4, div#contentWrapper div.programs ul#programs p, div#contentWrapper div.programs ul#programs ul.audienceLinks {margin-left: 0px; padding: 0 12px 0 0;}
+	div#contentWrapper div.programs ul#programs p {padding-bottom: 12px;}
+}
+
+@media only screen and (max-width : 880px) {	
+	div#careerTopNav ul#audiences {width: 100%;}
+	div#careerTopNav ul#audiences li {width: 20%; text-align: center;}
+	div#careerTopNav ul#other.topNav {border: none; border-top: 8px solid #FFF; clear: left; float: left; width: 100%; border-left: none;}
+	div#careerTopNav ul#other.topNav li {width: 30%; text-align: center;}
+	div#careerTopNav ul#other.topNav li:first-child {width: 40%;}
+	
+	table#tunnel {
+		display: block;
+		border: none;
+	}
+	table#tunnel tr {
+		display: block;
+		border: none;
+		margin-bottom: 1em;
+	}
+	table#tunnel th {
+		display: none;
+	}
+	table#tunnel td {
+		display: inline;
+		padding: 0;
+		border: 0;
+		color: #505050;
+	}
+	table#tunnel td.title {
+		color: #000;
+	}
+	table#tunnel td.posted:after {
+		content: ": ";
+	}
+	table#tunnel td.title:after {
+		content: " (";
+	}
+	table#tunnel td.type:after {
+		content: "; due ";
+	}
+	table#tunnel td.deadline:after {
+		content: ")";
+	}
+}
+
+@media only screen and (max-width : 750px) {	
+	/* TOP NAVIGATION */
+	div#careerTopNav {font-size: 10px;}
+	div#careerTopNav ul.topNav li a {padding: 10px 8px 6px 8px;}
+	div#siteInfo form.searchForm {clear: both; float: none; padding-top: 0;}
+}
+	
+/* 600 and below => SINGLE COLUMN LAYOUT */
+@media only screen and (max-width : 600px) {
+	div#wrapperOuter {margin: 0;}
+	div#wrapperInner {padding: 0; max-width: 600px; min-width: 240px; overflow: hidden; width: 100%;}
+	div#siteTrivia, div#adminStuff {max-width: 580px; min-width: 220px; padding: 0 10px; overflow: hidden;}
+	div#bannerAndMeat, div#postContent, div#breadcrumbs {padding: 10px 10px 0;}
+	div#bannerAndMeat {padding-top: 0;}
+	div#careerBanner {border-bottom: 1px solid #D3D3D3;}
+	div#breadcrumbs {display: block; padding: 6px 10px;}
+	div#footer {max-width: 600px; min-width: 240px;}
+	
+	body.js div#careerBanner h3 {display: block; position: absolute; top: 0px; right: 0; z-index: 100; padding: 0; font-size: 16px;background: #E7E6E3 url('images/menu_show.jpg')no-repeat 85% center;}
+	div#careerBanner h3 a {display: block; padding: 14px 20px 13px; padding-right: 35px;color: #333;}
+	body.js div#careerBanner h3.menuActive {background: #E7E6E3 url('images/menu_hide.jpg')no-repeat 85% center;}
+	body div#careerTopNav, body ul#aboutAndLogin {display: none;}
+	body.responsiveMenuActive div#careerTopNav, body.responsiveMenuActive ul#aboutAndLogin {display: block;}
+	
+	div#minisiteNavigation, div#subNav, p.textOnlyLink {margin-right: 0;}
+	div#content, div#meat div#content, div#navigation, 	div#meat.containsConNav div#content, div#contentWrapper, div#contentWrapper.hasSidebar, div#sidebarWrapper, div#meat.containsConNav div#contentWrapper.hasSidebar, div#meat.containsConNav div#sidebarWrapper {clear: both; display: block; float: none; width: 100%;}
+
+	div#slideshow, #postContent div.emailForm {display:none;}
+
+	div#careerBanner h1 {float: none; display: block; float: left; font-size: 1.8em; line-height: 1.333em; font-weight: 400;}
+	div#careerBanner h2 {position: static; display: block; display: none;}
+	div#careerBanner h1 a {padding: 4px 0;}
+
+	ul#aboutAndLogin {position: static; padding: 0; margin-bottom: 8px; border: none; text-align: center; clear: left;}
+	ul#aboutAndLogin li {display: inline; float: none; padding: 0; margin: 0;}
+	ul#aboutAndLogin li a {display: block; float: left; padding: 0;  margin: 0; width: 33.3333333333%;  border: none; }
+	ul#aboutAndLogin li a span,
+	ul#aboutAndLogin li span.loggedIn { display: block; padding: 6px 0 4px;}
+	ul#aboutAndLogin li.contact a span { border-left: 1px solid #FFF; border-right: 1px solid #FFF; }
+	ul#aboutAndLogin li span.message {display: none;}
+
+	div#careerTopNav {margin-bottom: 0;}
+	div#careerTopNav ul#audiences, div#careerTopNav ul#other {float: none;}
+	div#careerTopNav ul.topNav li {list-style-type: none; float: none; border-bottom: 1px solid #FFF;}
+	div#careerTopNav ul.topNav li a {padding: 8px 12px 6px;}
+
+	div#careerTopNav {background: none;}
+	div#careerTopNav ul#audiences {margin-bottom: 8px;}
+	div#careerTopNav ul#audiences li {width: 100%; text-align: left; border-bottom: 1px solid #FFF;}
+	div#careerTopNav ul#other li {display: inline;}
+	div#careerTopNav ul#other li a {width: 25%; float: left; display: block; padding: 0; border: none; text-align: center;}
+	div#careerTopNav ul#other li:first-child a {width: 50%;}
+	div#careerTopNav ul#other li a span {border-left: 1px solid #FFF; display: block; padding: 6px 0 4px;}
+	div#careerTopNav ul#other li:first-child a span {border-left: none;}
+	div#careerTopNav ul#other.topNav {border: none;}
+	
+	div#content div.contentHead {padding-top: 12px;}
+	div#content h2.pageTitle {border-bottom: none;padding: 0; padding-bottom: 0;}	
+	div#content div.contentPost, div#content div.contentMain {padding-top: 8px;}
+	
+	p.textOnlyLink {display: none;}
+	
+	/* home page */	
+	div#meat div#contentWrapper.hasSidebar {width: 100%;}
+	div#meat div.programs h3 {font-size: 1.5em; padding: 0 0 6px 0; border-bottom: none; border-top: none;}
+	div#content div#sidebarWrapper {float: none; width: 100%;}
+
+	/* audience landing pages */	
+	div#contentWrapper.hasSidebar ul.childrenList {margin: 0;}
+	div#contentWrapper.hasSidebar ul.childrenList ul li {line-height: 1; float: left; display: block; margin: 0 8px 8px 0;}
+	div#contentWrapper.hasSidebar ul.childrenList img {width: 25%; height: auto;}
+
+	/* pages */	
+	div.noBorder div.sidebarSection {margin-left: 0;}
+	div#sidebarContent {border-left: none; padding: 0;}
+	/*div.blurb {padding: 0 0 1em;}*/
+	
+	ul#horizontalFeeds {margin-bottom: 0;}
+	ul#horizontalFeeds.col4 li.feed {width: 100%;}
+
+	ul#horizontalFeeds li.feed {border-left: none; border-bottom: 1px solid #E6E5E3; float: none; padding-bottom: 10px;}
+	ul#horizontalFeeds li h3 {padding: 10px 0 0;}
+	ul#horizontalFeeds li ul {padding: 10px 0 0;}
+	li.feed div#miniCal div#events {padding: 10px 0 0;}
+	
+	ul#horizontalFeeds li p.more {padding: 0;}
+	
+	/* sidebar */	
+	div#sidebarContent div.sidebarSection {border-left: none; float: none; margin-bottom: 0; font-size: .9em;}
+	div#sidebarContent div.sidebarSection:first-child {border-top: none;}
+	div#sidebarContent div.sidebarSection a {font-weight: bold;}
+	div#sidebarContent div.sidebarSection h3 {padding: 10px 0 0; margin-bottom: 0;}
+	div#sidebarContent div.sidebarSection ul, div#sidebarContent div.sidebarSection div#miniCal div#events {padding: 10px 0 0;}
+	div#sidebarContent div.sidebarSection div.featuresModule {margin-bottom: 18px;}
+	div#sidebarContent div.sidebarSection ul.features {padding: 0;}
+	div#sidebarContent div.sidebarSection div.uname_quick_links h3, div#sidebarContent div.sidebarSection div.formHeading h3 {padding: 0; font-size: 1.4em; margin-bottom: 12px;}
+	div#sidebarContent div.sidebarSection ul.features h3 {padding: 0;}
+	
+	div#formWrapper {margin-right: 0;}
+	
+	/* programs */	
+	div#content div.programs {padding-right: 0;}
+	div.programs ul#programs li.program {float: none; padding: 20px 0; width: 100%;}
+	#content div.programs ul#programs li.even {background-color: #E7E6E3;}
+	div#content div.programs h4 {font-weight: bold; font-size: 1.4em;}
+	
+	/* faculty/staff */	
+	div#facultyStaff {margin-right: 0px;}
+	.facStaffImage {margin-right: 0;}
+	
+	/* blogs */	
+	div#blog div.moduleNav {float: none; width: 100%; margin-bottom: 20px;}
+	div#contentWrapper div#blog ul.posts {margin: 0;}
+	div.publication div.persistent {border-left: 1px solid #E6E5E3;float: right;position: relative;top: -16px;width: 36%;margin-left: 2%;display: none;}
+	
+	div#blog div.fullPost div.primaryContent {margin-right: 0;width: 100%;}
+	div#blog div.fullPost div.relatedItems {border-left: none;clear: none;float: left;margin-top: 20px;margin-bottom: 20px;width: 100%;}
+	div#blog div.fullPost {width: auto;float: none;}
+	
+	div#blog li.post, div#blog div.fullPost div.primaryContent {float: none;width: 100%;clear: none;}
+	
+	div#blog div.relatedItems div.images, div#blog div.relatedItems div.assets, div#blog div.relatedItems div.categories {padding: 16px 0 0 0;}
+	div#blog li.post div.teaserImage {width: 100px;}
+	div#blog li.post div.teaserImage img {width: 100%; height: auto;}
+	
+	
+	/* events page */	
+	div#calendar div.views ul li a, div#calendar div.views ul li strong, div#calendar div.views h4 {display: block;padding: 0.2em 0.6em;}
+	
+	div#calendar div.gridAndOptions {width: 100%;margin-bottom: .5em;}
+	
+	div#calendar div.gridAndOptions div.calendarGrid, div#calendar div.gridAndOptions div.search, div#calendar div.gridAndOptions div.options {display: none;}
+	
+	div#calendar div.foot {font-size: .8765em;}
+	
+	div#calendar div.foot div.nav {display: none;}
+	div#calendar div.dateJump {clear: both; margin: 7px;padding-top: 0;}
+	
+	
+	/* footer */	
+	ul#centerInfo li {border-right: none;border-bottom: 1px dotted #619BA5;float: none;list-style-type: none;min-height: 0;padding-bottom: 0px;padding-top: 10px;width: 100%;}
+	div#siteInfo h3 {display: block; float: none; padding-bottom: 0;}
+	div#siteInfo ul.infoLinks li {display: block; clear: left; padding: 0 20px; padding-top: 0;}
+}
+
+@media only screen and (max-width : 320px) {
+	body.js div#careerBanner h3 a {padding: 14px 35px 13px 8px;}	
+}

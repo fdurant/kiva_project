@@ -1,0 +1,52 @@
+@import url("/global_stock/css/carleton_basic_rules.css");
+@import url("nav.css");
+
+#carlNavWrap {
+	background-image: url("img/compact/bg.gif");
+	background-position:left top;
+}
+#carlHome { width:240px; height:48px; font-size:1.33em; }
+#carlNav { background-image:url('img/compact/cc.gif'); }
+#carlHome a { display:block; margin:15px 0 0 13px; width:230px; height:30px; }
+#carlHome a span {
+	background-image: url('img/compact/cc.gif');
+	background-position:-13px -16px;
+}
+#carlTabs {
+	padding:0;
+	clear:none;
+	position:absolute;
+	bottom:0;
+	left:255px;
+	overflow:hidden;
+}
+#carlTopics, #carlAudiences {
+	position:relative;
+	bottom:-2px;
+}
+#carlTabs ul {
+	font-size:0.6875em;
+	-moz-box-shadow:0 0 3px #000;
+	-webkit-box-shadow:0 0 3px #000;
+	box-shadow:0 0 3px #000;
+}
+#carlTabs a { padding:3px 5px 0 5px; height:17px; }
+#carlTopics ul { margin-right:10px;  }
+#combinedSearch {
+	margin:15px 12px 0 605px;
+}
+#combinedSearch label { font-size:0.75em; }
+#combinedSearch .finders { font-size:0.5625em; }
+#combinedSearch .input { font-size:0.6875em; padding:3px 3px; }
+#combinedSearch .submit { font-size:0.75em; margin-left:-0.25em;}
+
+
+@media only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+    #carlNav, #carlHome a span {
+		background-image:url('img/compact/cc_hd.gif');
+		-webkit-background-size:410px 84px;
+		-moz-background-size:410px 84px;
+		-o-background-size:410px 84px;
+		background-size:410px 84px;
+    }
+}

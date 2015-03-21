@@ -27,8 +27,9 @@ isoregionCode2Name = {'eu':'Europe',
                       'sa':'South America',
                       'af':'Africa',
                       'as':'Asia',
+                      'an':'Antarctica',
                       'oc':'Oceania',
-                      'unk':'Unknown',
+                      'unk':'Unknown and anonymous',
                       'oth':'Other'
                       }
 
@@ -76,9 +77,10 @@ for i,loan_lenders in enumerate(loansLendersCursor):
     if i % 100000 == 0 and i != 0:
         print >> sys.stderr, ">>>>>>>>>>>>>>>>>>>>>>> loaded %d loan_lenders ..." % i
 
-    loan_id = loan_lenders['id']
+    loan_id = int(loan_lenders['id'])
     loans_lenders[loan_id] = loan_lenders
 
+print >> sys.stderr, "Number of loans loaded from loans_lenders: %d" % len(loans_lenders.keys())
 
 loansCollection = client.kiva.loans
 startYear = int(args.startYear)
@@ -92,56 +94,72 @@ loansCursor = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : startD
                                     })
 print >> sys.stderr, "done"
 
+smallestLoanId = 10000000000;
+largestLoanId = -1;
+
+nrLoanIdHits = 0
+nrLoanIdMisses = 0
+nrLenderIdsHits = 0
+nrLenderIdsMisses = 0
+nrLenderIdHits = 0
+nrLenderIdMisses = 0
+nrCountryHits = 0
+nrCountryMisses = 0
+
 country2country_loans = {}
 
-for i,loan in enumerate(loansCursor):
+i = -1
+for loan in loansCursor:
+    
+    loanId = int(loan['id'])
+    if loanId < smallestLoanId:
+        smallestLoanId = loanId
+    if loanId > largestLoanId:
+        largestLoanId = loanId
+    loanAmount = int(loan['loan_amount'])
+    fundedAmount = int(loan['funded_amount'])
+    if (loanAmount > fundedAmount):
+        # This loan was never granted, so skip it
+        continue
+    else:
+        i += 1
 
     if i % 10000 == 0 and i != 0:
-        print >> sys.stderr, ">>>>>>>>>>>>>>>>>>>>>>> processed %d loans ..." % i
+        print >> sys.stderr, ">>>>>>>>>>>>>>>>>>>>>>> processed %d fully funded loans ..." % i
 
-    loanId = loan['id']
-    loanAmount = int(loan['loan_amount'])
-#    print "loanId = ", loanId
-#    print "loanAmount = ", loanAmount
-    postedDate = loan['posted_date']
-    lenderCount = loan['lender_count']
-    location_country_code = loan['location']['country_code'].lower()
+    if loans_lenders.has_key(loanId):
+        nrLoanIdHits += 1
 
-#    if re.match("^[aA]",location_country_code):
-#        pass
-#    else:
-#        continue#
+        #    print "loanId = ", loanId
+        #    print "loanAmount = ", loanAmount
+        postedDate = loan['posted_date']
+        lenderCount = loan['lender_count']
+        location_country_code = loan['location']['country_code'].lower()
 
-    try:
         loan_lenders = loans_lenders[loanId]
         lender_ids = loan_lenders['lender_ids']
 #        print "loanId = ", loanId
 #        print "lenders = ", lender_ids
-        if postedDate < startDate:
-            print >> sys.stderr, "Discarding loan dated %s" % str(posted_date)
-            continue
-        else:
-#            print >> sys.stderr, "OK: loan dated %s" % str(posted_date)
-            pass
+
         if lender_ids:
+            nrLenderIdsHits += 1
             nrLenders = len(lender_ids)
-            assert(nrLenders == lenderCount)
+#            assert(nrLenders == lenderCount)
             avgLoanAmountPerLender = loanAmount/lenderCount
             for lender_id in lender_ids:
 #                print "lender_id =", lender_id
-                try:
-                    lender_country = lenders[lender_id]['country_code'].lower()
+                if lenders.has_key(lender_id):
+                    nrLenderIdHits += 1
+                    lender_country = lenders[lender_id]['country_code']
                     if lender_country is None:
+                        nrCountryMisses += 1
                         lender_country = "unk"
-                except:
+                    else:
+                        nrCountryHits += 1
+                        lender_country = lender_country.lower()
+                else:
+                    nrLenderIdMisses += 1
                     lender_country = "unk"
-
-#                if re.match("^[aA]",lender_country):
-#                    pass
-#                else:
-#                    continue
-
-
 
                 # We don't know exactly how much each lender gave, so we take the average
                 if country2country_loans.has_key(lender_country):
@@ -153,6 +171,7 @@ for i,loan in enumerate(loansCursor):
                     country2country_loans[lender_country] = {}
                     country2country_loans[lender_country][location_country_code] = avgLoanAmountPerLender
         else:
+            nrLenderIdsMisses += 1
             # Assume the loan comes from an unknown country
             lender_country = "unk"
             if country2country_loans.has_key(lender_country):
@@ -163,9 +182,21 @@ for i,loan in enumerate(loansCursor):
             else:
                 country2country_loans[lender_country] = {}
                 country2country_loans[lender_country][location_country_code] = loanAmount
-    except Exception, e:
-#        print >> sys.stderr, "Error in finding loan %s:\n%s" % (loanId,str(e))
-        pass
+
+    else:
+        nrLoanIdMisses += 1
+        # Assume the loan comes from an unknown country
+
+print >> sys.stderr, "smallestLoanId = ", smallestLoanId
+print >> sys.stderr, "largestLoanId = ", largestLoanId
+print >> sys.stderr, "nrLoanIdHits = ", nrLoanIdHits
+print >> sys.stderr, "nrLoanIdMisses = ", nrLoanIdMisses
+print >> sys.stderr, "nrLenderIdsHits = ", nrLenderIdsHits
+print >> sys.stderr, "nrLenderIdsMisses = ", nrLenderIdsMisses
+print >> sys.stderr, "nrLenderIdHits = ", nrLenderIdHits
+print >> sys.stderr, "nrLenderIdMisses = ", nrLenderIdMisses
+print >> sys.stderr, "nrCountryHits = ", nrCountryHits
+print >> sys.stderr, "nrCountryMisses = ", nrCountryMisses
 
 # Prepare JSON objects to be dumped in a format compatible with D3 visualization as in 
 # https://apps.carleton.edu/career/visualize/
@@ -177,12 +208,16 @@ country2country_loans_for_d3 = {'nodes':[],
 # This reduces the number of countries to be shown individually
 lendingCountries = {}
 borrowingCountries = {}
+lendingRegions = {'na':0,'unk':0,'eu':0,'oc':0,'as':0,'sa':0,'af':0,'an':0}
+borrowingRegions = {'na':0,'unk':0,'eu':0,'oc':0,'as':0,'sa':0,'af':0,'an':0}
 for lendingCountryCode in [lcc for lcc in country2country_loans.keys() if lcc != 'oth']:
     for lendingCountryCode, loans in country2country_loans.items():
         for borrowingCountryCode in [bcc for bcc in loans.keys() if bcc != 'oth']:
             if country2country_loans[lendingCountryCode][borrowingCountryCode] >= minValue:
                 lendingCountries[lendingCountryCode.lower()] = 1
                 borrowingCountries[borrowingCountryCode.lower()] = 1
+                lendingRegions[iso2region[lendingCountryCode.lower()]] += country2country_loans[lendingCountryCode][borrowingCountryCode]
+                borrowingRegions[iso2region[borrowingCountryCode.lower()]] += country2country_loans[lendingCountryCode][borrowingCountryCode]
             else:
                 # Move this cumulative item to "other" for both lender and borrower
                 lendingCountries['oth'] = 1
@@ -195,9 +230,18 @@ for lendingCountryCode in [lcc for lcc in country2country_loans.keys() if lcc !=
                     country2country_loans['oth']['oth'] = country2country_loans[lendingCountryCode][borrowingCountryCode]
                 del country2country_loans[lendingCountryCode][borrowingCountryCode]
 
-# Hardcoded, for convenience
-lendingRegionCodes = ['oth','na','unk','eu','oc','as','sa','af']
-borrowingRegionCodes = ['oth','as','af','sa','na','oc','eu']
+# This will determine the vertical display of the lending and borrowing regions (first element on top)
+lendingRegionCodes = ['oth']
+lendingRegionCodes.extend(sorted([x for x in lendingRegions.keys() if lendingRegions[x] > 0],
+                                 key=lambda x:lendingRegions[x], 
+                                 reverse=True))
+borrowingRegionCodes = ['oth']
+borrowingRegionCodes.extend(sorted([x for x in borrowingRegions.keys() if borrowingRegions[x] > 0],
+                                   key=lambda x:borrowingRegions[x],
+                                   reverse=True))
+
+print "%d lendingRegionCodes: " % len(lendingRegionCodes), lendingRegionCodes
+print "%d borrowingRegionCodes: " % len(borrowingRegionCodes), borrowingRegionCodes
 
 # Sort by position in region list (see above), then alphabetically by country code
 lendingCountries = sorted(lendingCountries.keys(), key=lambda x: (lendingRegionCodes.index(iso2region[x]),x))

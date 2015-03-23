@@ -8,6 +8,7 @@ import os
 import sys
 import argparse
 import csv
+from kiva_utilities import getFundingRatio
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -15,10 +16,13 @@ parser.add_argument('--dataDir', help='Directory for writing the corpus and voca
 parser.add_argument('--corpusBaseName', help='Base name for the corpus', required=True)
 parser.add_argument('--stopwordFile', help='File with extra corpus-specific stop words', required=False)
 parser.add_argument('--startYear', help='Get all documents starting with this year', default=2014)
+parser.add_argument('--endYear', help='Loans later than this year are discarded', default=2999)
 parser.add_argument('--maxNrDocs', help='Maximum number of documents to convert', default=1000000)
 parser.add_argument('--filterBelow', help='Minimum number of documents in which a vocab word must occur', default=5)
 parser.add_argument('--filterAbove', help='Vocab words that appear in more than this PERCENTAGE of docs are filtered', default=0.5)
 parser.add_argument('--filterKeepN', help='Number of vocab words to keep after the Below and Above filters have been applied', default=100000)
+parser.add_argument('--classificationField', help='Name of the (calculated) field that defines the class label', required=False, choices=['funding_ratio'])
+parser.add_argument('--classLabelFileName', help='Name of the file in --dataDir that will contain the class labels for sLDA', required=False)
 args = parser.parse_args()
 
 client = MongoClient()
@@ -31,14 +35,23 @@ loansCollection = client.kiva.loans
 
 startYear = int(args.startYear)
 start = datetime(startYear, 1, 1)
+endYear = int(args.endYear)
+end = datetime(endYear, 12, 31, 23, 59, 59)
 print >> sys.stderr, "Creating MongoDB cursor ...",
-c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},
+c = loansCollection.find({"$and" : [{"$and" : [{"posted_date" : { "$gte" : start }},
+                                               {"posted_date" : { "$lte" : end }}]
+                                    },
                                     {"processed_description.texts.%s" % langCode :{'$exists': True}}
                                     ]
                           })
 print >> sys.stderr, "done"
-print "Number of loans in '%s' since %d: %d" % (langCode,startYear,c.count())
+print "Number of loans in '%s' between %d and %d: %d" % (langCode,startYear,endYear,c.count())
 
+classLabelList = None
+createClassLabelFile = args.classificationField and args.classLabelFileName
+if createClassLabelFile:
+    # This will be populated later on by MyCorpus. It's a hack, I know
+    classLabelList = []
 
 stopWords = {stopWord:1 for stopWord in stopwords.words('english')}
 
@@ -54,15 +67,20 @@ id2word=Dictionary([])
 
 # Heavily inspired by https://radimrehurek.com/gensim/tut1.html
 class MyCorpus(object):
-    def __init__(self, dict=None, allowDictUpdate=True, cursor=None, firstNrDocs=-1, langCode='en'):
+    def __init__(self, dict=None, allowDictUpdate=True, cursor=None, firstNrDocs=-1, langCode='en', labelList=None):
         self.cursor = cursor
         self.firstNrDocs = firstNrDocs
         self.langCode = langCode
         self.dict = dict
         self.allowDictUpdate = allowDictUpdate
+        self.labelList = labelList
 
     def __iter__(self):
         for loan in self.cursor[:maxNrDocs]:
+            if type(self.labelList) == type([]):
+                if args.classificationField == 'funding_ratio':
+                    fundingRatio = getFundingRatio(float(loan["funded_amount"]), float(loan["loan_amount"]), 4)
+                    self.labelList.append(fundingRatio)
             rawDoc = loan["processed_description"]["texts"][self.langCode]
             sentences = sent_tokenize(rawDoc)
             words = [word_tokenize(s) for s in sentences]
@@ -71,7 +89,7 @@ class MyCorpus(object):
 #            print flat
             yield self.dict.doc2bow(flat,allow_update=self.allowDictUpdate)
                         
-streamedCorpus = MyCorpus(id2word, True, c, maxNrDocs, langCode)
+streamedCorpus = MyCorpus(id2word, True, c, maxNrDocs, langCode, classLabelList)
 print >> sys.stderr, "First pass: streaming from MongoDB ..."
 
 print >> sys.stderr, "creating the dictionary ..."
@@ -112,7 +130,9 @@ except:
 
 # Second pass, because we need to *stream* the data into the BleiCorpus format
 print >> sys.stderr, "Second pass: streaming from MongoDB ...",
-c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},
+c = loansCollection.find({"$and" : [{"$and" : [{"posted_date" : { "$gte" : start }},
+                                               {"posted_date" : { "$lte" : end }}]
+                                    },
                                     {"processed_description.texts.%s" % langCode :{'$exists': True}}
                                     ]
                           })
@@ -122,3 +142,9 @@ BleiCorpus.serialize(corpusFile, MyCorpus(id2word, False, c, maxNrDocs, langCode
 print >> sys.stderr, "done"
 print >> sys.stderr, "Number of documents converted: %d" % realNrDocs
 print >> sys.stderr, "Vocabulary size: %d" % len(id2word.items())
+
+if createClassLabelFile:
+    fullClassLabelFileName = "%s/%s" % (args.dataDir, args.classLabelFileName)
+    classLabelFileHandle = open(fullClassLabelFileName, "wb")
+    for label in classLabelList:
+        classLabelFileHandle.write("%d\n" % label)

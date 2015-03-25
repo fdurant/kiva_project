@@ -2,7 +2,7 @@ import argparse
 import csv
 import numpy as np
 import sys
-from sklearn.cross_validation import StratifiedShuffleSplit
+from sklearn.cross_validation import ShuffleSplit
 import re
 
 parser = argparse.ArgumentParser()
@@ -16,16 +16,28 @@ parser.add_argument('--test_size', help='as in sklearn.cross_validation.Stratifi
 parser.add_argument('--train_size', help='as in sklearn.cross_validation.StratifiedShuffleSplit', default=None)
 args = parser.parse_args()
 
-labels = []
-# First pass: read in the original file with labels
+# Key: class label
+# Value: list containing all indices from the original instance file that have that label
+instanceIndicesPerLabel = {}
+# First pass: read in the original file with labels, and keep them separate per class
 print >> sys.stderr, "Reading original labels from %s ..." % args.bleiLabelFile,
 with open(args.bleiLabelFile, 'rb') as tsvfile:
-    ccReader = csv.reader(tsvfile, delimiter='\t')
-    for i,row in enumerate(ccReader):
-        labels.append(row[0])
+    labelReader = csv.reader(tsvfile, delimiter='\t')
+    for i,row in enumerate(labelReader):
+        label = int(row[0])
+        if instanceIndicesPerLabel.has_key(label):
+            instanceIndicesPerLabel[label].append(i)
+        else:
+            instanceIndicesPerLabel[label] = [i]
 print >> sys.stderr, "done"
 
-print >> sys.stderr, "number of labels read: %d" % len(labels)
+nrClasses = len(instanceIndicesPerLabel.keys())
+
+smallestClassLength = 0
+for l in instanceIndicesPerLabel:
+    print >> sys.stderr, "number of original instances in class %d: %d" % (l, len(instanceIndicesPerLabel[l]))
+    if smallestClassLength < len(instanceIndicesPerLabel[l]):
+        smallestClassLength = len(instanceIndicesPerLabel[l])
 
 testSize = None
 if not args.test_size is None:
@@ -43,28 +55,55 @@ if not args.train_size is None:
 
 # Inspired by http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html#sklearn.cross_validation.StratifiedShuffleSplit
 
-# Value: index (in range 0 .. len(labels))
-# Key: 'train' or 'test'
+if type(testSize) == type(1) and type(trainSize) == type(1):
+    assert((testSize + trainSize) / nrClasses <= smallestClassLength), "Sum of testSize %d and trainSize %d divided by number of classes %d must be smaller than or equal to smallest class length %d" % (testSize, trainSize, nrClasses, smallestClassLength)
+    trainSizePerClass = trainSize/nrClasses
+    testSizePerClass = testSize/nrClasses
+elif (type(testSize) == type(1.0) and type(trainSize) == type(1.0)):
+    # Ratio has been specified
+    trainSizePerClass = int(smallestClassLength * trainSize)
+    testSizePerClass = int(smallesClassLength * testSize)
+elif testSize is None or trainSize is None:
+    trainSizePerClass = int(smallestClassLength * 0.5)
+    testSizePerClass = int(smallesClassLength * 0.5)
+
+print >> sys.stderr, "trainSizePerClass = ", trainSizePerClass
+print >> sys.stderr, "testSizePerClass = ", testSizePerClass
+
+# Key: originalIndex
+# Value: associative array with
+#        key: metaIndex into instanceIndicesPerLabel[classLabel]
+#        value: tuple consisting of:
+#               classLabel (in range 0..nrClasses-1)
+#               'train' or 'test'
 indicesToKeep = {}
 
-i = 0
-for trainIndex, testIndex in StratifiedShuffleSplit(labels, 1, test_size=testSize, train_size=trainSize, random_state=1):
-    # We only expect 1 loop
-    assert(i == 0)
-    i += 1
-    print >> sys.stderr, "number of indices into training set: %d " % len(trainIndex)
-#    print >> sys.stderr, "trainIndex[0:10] = ", trainIndex.tolist()[0:10]
-    print >> sys.stderr, "number of indices into test set: %d " % len(testIndex)
-#    print >> sys.stderr, "testIndex[0:10] = ", testIndex.tolist()[0:10]
+for classLabel in sorted(instanceIndicesPerLabel.keys()):
+    
+    i = 0
+    for trainIndex, testIndex in ShuffleSplit(n=len(instanceIndicesPerLabel[classLabel]), 
+                                              n_iter=1, 
+                                              test_size=testSizePerClass, 
+                                              train_size=trainSizePerClass,
+                                              random_state=1):
+        # We only expect 1 loop
+        assert(i == 0)
+        i += 1
+        print >> sys.stderr, "number of indices of class %d into training set: %d " % (classLabel, len(trainIndex))
+        #print >> sys.stderr, "trainIndex[0:10] = ", trainIndex.tolist()[0:10]
+        print >> sys.stderr, "number of indices of class %d into test set: %d " % (classLabel, len(testIndex))
+        #print >> sys.stderr, "testIndex[0:10] = ", testIndex.tolist()[0:10]
 
-    for i in trainIndex.tolist():
-        assert(indicesToKeep.has_key(i) == False)
-        indicesToKeep[i] = 'train'
+        for m in trainIndex.tolist():
+            origIndex = instanceIndicesPerLabel[classLabel][m]
+            assert(indicesToKeep.has_key(origIndex) == False)
+            indicesToKeep[origIndex] = (classLabel, 'train')
 
-    for j in testIndex.tolist():
-        # There should be no overlap between test and training set
-        assert(indicesToKeep.has_key(j) == False)
-        indicesToKeep[j] = 'test'
+        for n in testIndex.tolist():
+            origIndex = instanceIndicesPerLabel[classLabel][n]
+            # There should be no overlap between test and training set
+            assert(indicesToKeep.has_key(origIndex) == False)
+            indicesToKeep[origIndex] = (classLabel, 'test')
 
 # Now that we know all the indices, create the output files
 trainCorpusFileHandle = open(args.bleiTrainCorpusFile, "w")
@@ -80,15 +119,13 @@ lineCounter = 0
 corpusFile = open(args.bleiCorpusFile, 'r')
 for line in corpusFile.readlines():
     if (indicesToKeep.has_key(lineCounter)):
-        if indicesToKeep[lineCounter] == 'train':
+        if indicesToKeep[lineCounter][1] == 'train':
             trainCorpusFileHandle.write(line)
-            trainLabelFileHandle.write("%s\n" % labels[lineCounter])
-        elif indicesToKeep[lineCounter] == 'test':
+            trainLabelFileHandle.write("%s\n" % indicesToKeep[lineCounter][0])
+        elif indicesToKeep[lineCounter][1] == 'test':
             testCorpusFileHandle.write(line)
-            testLabelFileHandle.write("%s\n" % labels[lineCounter])
+            testLabelFileHandle.write("%s\n" % indicesToKeep[lineCounter][0])
     lineCounter += 1
-
-assert(lineCounter == len(labels)), 'Expecting line count %d to be equal to number of labels %d' % (lineCounter, len(labels))
 
 trainCorpusFileHandle.close()
 trainLabelFileHandle.close()

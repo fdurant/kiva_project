@@ -8,7 +8,7 @@ import os
 import sys
 import argparse
 import csv
-from kiva_utilities import getFundingRatio
+from kiva_utilities import getFundingRatioLabel
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -79,8 +79,8 @@ class MyCorpus(object):
         for loan in self.cursor[:maxNrDocs]:
             if type(self.labelList) == type([]):
                 if args.classificationField == 'funding_ratio':
-                    fundingRatio = getFundingRatio(float(loan["funded_amount"]), float(loan["loan_amount"]), 2)
-                    self.labelList.append(fundingRatio)
+                    fundingRatioLabel = getFundingRatioLabel(float(loan["funded_amount"]), float(loan["loan_amount"]))
+                    self.labelList.append((fundingRatioLabel,loan["id"]))
             rawDoc = loan["processed_description"]["texts"][self.langCode]
             sentences = sent_tokenize(rawDoc)
             words = [word_tokenize(s) for s in sentences]
@@ -146,5 +146,5 @@ print >> sys.stderr, "Vocabulary size: %d" % len(id2word.items())
 if createClassLabelFile:
     fullClassLabelFileName = "%s/%s" % (args.dataDir, args.classLabelFileName)
     classLabelFileHandle = open(fullClassLabelFileName, "wb")
-    for label in classLabelList:
-        classLabelFileHandle.write("%d\n" % label)
+    for label, loanId in classLabelList:
+        classLabelFileHandle.write("%d\t%d\n" % (label,loanId))

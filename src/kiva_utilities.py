@@ -17,27 +17,25 @@ def getMajorityGender(people):
     else:
         return u'N'    
 
-def getFundingRatio(numerator, denominator, numberOfBins):
+def getFundingRatioLabel(numerator, denominator, posCutoff=1.0, negCutoff=0.5):
     '''
-    This very ad-hoc function calculates a ratio and assigns the ratio in numberOfBins evenly-spaced
-    bins (named 0 through numberOfBins-1), OR in bin numberOfBins.
-    What's special, is that the bin numberOfBins is chosen IFF ratio >= 1
-    Bins 0 through numberOfBins-1 are closed-ended on their lower side,
-    and open-ended on their larger side.
+    This very ad-hoc function calculates the funding ratio and returns a label based on its value
+    Possible return values are:
+    -1: to be discarded
+    0: not funded
+    1: funded
     '''
     assert(numerator >= 0.0)
     assert(denominator >= 0.0)
-    assert(numberOfBins >= 2)
-    assert(type(numberOfBins) == type(1)) # i.e. int
+    assert(posCutoff > negCutoff)
     ratio = float(numerator)/float(denominator)
     assert(ratio >= 0.0)
-    if ratio >= 1.0:
-        return numberOfBins
+    if ratio >= posCutoff:
+        return 1
+    elif ratio <= negCutoff:
+        return 0
     else:
-        binWidth = 1/float(numberOfBins)
-        for binCounter in range(numberOfBins):
-            if ratio < binWidth * (binCounter+1):
-                return binCounter
+        return -1
 
 if __name__ == "__main__":
     
@@ -61,10 +59,13 @@ if __name__ == "__main__":
     assert(countGender(borrowers4)[u'M'] == 0)
     assert(getMajorityGender(borrowers4) == u'N')
 
-    assert(getFundingRatio(0, 1000, 4) == 0)
-    assert(getFundingRatio(3, 10, 2) == 0)
-    assert(getFundingRatio(7, 10, 2) == 1)
-    assert(getFundingRatio(10, 10, 2) == 2)
-    assert(getFundingRatio(3, 10, 10) == 2)
-    assert(getFundingRatio(9.5, 10, 10) == 9)
-    assert(getFundingRatio(10, 10, 10) == 10)
+    assert(getFundingRatioLabel(0, 10) == 0)
+    assert(getFundingRatioLabel(10, 10) == 1)
+    assert(getFundingRatioLabel(1, 2) == 0)
+    assert(getFundingRatioLabel(2, 3) == -1)
+    assert(getFundingRatioLabel(2, 4) == 0)
+    assert(getFundingRatioLabel(3, 10, negCutoff=0.3) == 0)
+    assert(getFundingRatioLabel(3, 10, negCutoff=0.2) == -1)
+    assert(getFundingRatioLabel(3, 10, negCutoff=0.3) == 0)
+    assert(getFundingRatioLabel(8, 10, posCutoff=0.8) == 1)
+    assert(getFundingRatioLabel(8, 10, posCutoff=0.9) == -1)

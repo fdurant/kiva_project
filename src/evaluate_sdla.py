@@ -15,7 +15,7 @@ print >> sys.stderr, "Reading predicted classes from %s ..." % args.predictedFil
 with open(args.predictedFile, 'rb') as predictedFileHandle:
     predictedReader = csv.reader(predictedFileHandle, delimiter='\t')
     for i,row in enumerate(predictedReader):
-        predicted.append(row[0])
+        predicted.append(int(row[0]))
 print >> sys.stderr, "done"
 
 expected = []
@@ -24,7 +24,7 @@ print >> sys.stderr, "Reading expected classes from %s ..." % args.expectedFile,
 with open(args.expectedFile, 'rb') as expectedFileHandle:
     expectedReader = csv.reader(expectedFileHandle, delimiter='\t')
     for i,row in enumerate(expectedReader):
-        expected.append(row[0])
+        expected.append(int(row[0]))
 print >> sys.stderr, "done"
 
 assert(len(predicted) == len(expected))

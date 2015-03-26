@@ -21,6 +21,7 @@ args = parser.parse_args()
 # Key: class label
 # Value: list containing all indices from the original instance file that have that label
 instanceIndicesPerLabel = {}
+loanIdAlreadySeen = {} # Weed out doubles. They shouldn't be there, but they are
 # First pass: read in the original file with labels, and keep them separate per class
 print >> sys.stderr, "Reading original labels from %s ..." % args.bleiLabelFile,
 with open(args.bleiLabelFile, 'rb') as tsvfile:
@@ -31,6 +32,11 @@ with open(args.bleiLabelFile, 'rb') as tsvfile:
         # Discard all -1 labels: they represent the "demilitarized" zone between 0 and 1 we don't want to model
         if label < 0:
             continue
+        # Discard double entries
+        if loanIdAlreadySeen.has_key(loanId):
+            continue
+        else:
+            loanIdAlreadySeen[loanId] = 1
         if instanceIndicesPerLabel.has_key(label):
             instanceIndicesPerLabel[label].append((i,loanId))
         else:

@@ -13,26 +13,95 @@ from sklearn.metrics import roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from math import log10
 import random
+from urllib2 import urlopen
+import json
+
+def getKivaPartners():
+
+    global partners
+    partners = {}
+    allRatings = []
+    allDelinquencyRates = []
+
+    kivaPartnersUrl = "http://api.kivaws.org/v1/partners.json"
+    print >> sys.stderr, "Retrieving Kiva partner list from %s ..." % kivaPartnersUrl,
+    dataStr = urlopen(kivaPartnersUrl).read()
+    dataObj = json.loads(dataStr,'utf-8')
+
+    print >> sys.stderr, "parsing it ...",
+    for partner in dataObj['partners']:
+        partnerId = partner['id']
+        partners[partnerId] = partner
+        if partner['status'] in ['active','paused']:
+            try:
+                rating = float(partner['rating'])
+                allRatings.append(rating)
+            except:
+                pass
+            try:
+                delinquencyRate = float(partner['delinquency_rate'])
+                allDelinquencyRates.append(delinquencyRate)
+            except:
+                pass
+    print >> sys.stderr, "done"
+    
+    global avgPartnerRating
+    avgPartnerRating = sum(allRatings)/float(len(allRatings))
+    global avgPartnerDelinquencyRate
+    avgPartnerDelinquencyRate = sum(allDelinquencyRates)/float(len(allDelinquencyRates))
+    
+    pprint(partners[185])
+
+def getPartnerDelinquencyRate(loan):
+
+    result = -1
+
+    try:
+        delinquencyRate = partners[loan['partner_id']]['delinquency_rate']
+        result = float(delinquencyRate)
+    except:
+        result = avgPartnerDelinquencyRate
+
+    assert(result >= 0.0)
+    return result
+
+def getPartnerRating(loan):
+
+    result = -1
+
+    try:
+        rating = partners[loan['partner_id']]['rating']
+        result = float(rating)
+    except:
+        result = avgPartnerRating
+
+    assert(result >= 0.0)
+    return result
 
 def initialize():
 
     global feat2func
     # Dictionary of extra features (i.e. on top of sLDA ones), with lambda function
     # that specifies how/where to get them (from an individual Kiva loan object)
-    feat2func = {'borrower_majority_gender':lambda doc: 1 if getMajorityGender(doc['borrowers']) == u'F' else 0,
-                 'loan_amount':lambda doc:doc['loan_amount'],
-                 'bonus_credit_eligibility':lambda doc: 1 if doc['bonus_credit_eligibility'] else 0,
-                 'nr_borrowers':lambda doc:len(doc['borrowers']),
-                 'translated':lambda doc: 1 if doc.has_key('translator') else 0,
-                 'disbursal_amount':lambda doc:doc['terms']['disbursal_amount'],
-                 'disbursal_ratio':lambda doc:float(doc['terms']['disbursal_amount'])/float(doc['loan_amount']),
-                 'repayment_term':lambda doc:doc['terms']['repayment_term'],
-                 'posted_month':lambda doc:doc['posted_date'].month,
-                 'posted_day_of_month':lambda doc:doc['posted_date'].day,
-                 'has_image':lambda doc: 1 if doc['image'] else 0,
-                 'geo_lat':lambda doc: float(re.split("\s+",doc['location']['geo']['pairs'])[0]),
-                 'geo_lon':lambda doc: float(re.split("\s+",doc['location']['geo']['pairs'])[1]),
-                 'constant':lambda doc:1
+    feat2func = {'borrower_majority_gender':lambda loan: 1 if getMajorityGender(loan['borrowers']) == u'F' else 0,
+                 'loan_amount':lambda loan:log10(loan['loan_amount']),
+                 'bonus_credit_eligibility':lambda loan: 1 if loan['bonus_credit_eligibility'] else 0,
+                 'nr_borrowers':lambda loan:log10(len(loan['borrowers'])),
+                 'translated':lambda loan: 1 if loan.has_key('translator') else 0,
+                 'disbursal_amount':lambda loan:loan['terms']['disbursal_amount'],
+                 'disbursal_ratio':lambda loan:float(loan['terms']['disbursal_amount'])/float(loan['loan_amount']),
+                 'repayment_term':lambda loan:loan['terms']['repayment_term'],
+                 'posted_month':lambda loan:loan['posted_date'].month,
+                 'posted_day_of_month':lambda loan:loan['posted_date'].day,
+                 'has_image':lambda loan: 1 if loan['image'] else 0,
+                 'geo_lat':lambda loan: float(re.split("\s+",loan['location']['geo']['pairs'])[0]),
+                 'geo_lon':lambda loan: float(re.split("\s+",loan['location']['geo']['pairs'])[1]),
+                 'en_description_length':lambda loan: log10(1) if not loan['description']['texts'].has_key('en') else log10(len(re.split("\s+",loan['description']['texts']['en']))),
+                 'partner_rating':lambda loan: getPartnerRating(loan),
+                 'partner_delinquency_rate':lambda loan: getPartnerDelinquencyRate(loan),
+                 'partner_loans_posted':lambda loan: log10(partners[loan['partner_id']]['loans_posted']),
+                 'partner_total_amount_raised':lambda loan: log10(partners[loan['partner_id']]['total_amount_raised']),
+                 'constant':lambda loan:1
                  }
 
     global args
@@ -104,9 +173,9 @@ def prepareData(sldaGammaFile, labelFile, loanIdFile):
     # Key: loanId
     # Value: the entry
     loans = {}
-    for i,doc in enumerate(c):
-        id = doc['id']
-        loans[int(id)] = doc
+    for i,loan in enumerate(c):
+        id = loan['id']
+        loans[int(id)] = loan
     print >> sys.stderr, "done"
 
     assert(len(loanIds) == len(loans.keys())), "expected equal number of loanIds (%d) and keys in associative array loans (%d)" % (len(loanIds), len(loans.keys()))
@@ -121,13 +190,13 @@ def prepareData(sldaGammaFile, labelFile, loanIdFile):
 
     extraFeatures = []
     for i,loanId in enumerate(loanIds):
-        doc = loans[loanId]
+        loan = loans[loanId]
         entry = []
 
         for f in featureChoices:
             if f in args.feat and f != 'slda':
                 func = feat2func[f]
-                entry.append(func(doc))
+                entry.append(func(loan))
     
         extraFeatures.append((loanId,entry))
 
@@ -203,6 +272,8 @@ def trainAndEvaluateClassifier(X,y):
 
 if __name__ == "__main__":
     
+    getKivaPartners()
+
     initialize()
 
     X_train, y_train = prepareTrainData()

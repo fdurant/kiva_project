@@ -98,7 +98,7 @@ for classLabel in sorted(instanceIndicesPerLabel.keys()):
                                               n_iter=1, 
                                               test_size=testSizePerClass, 
                                               train_size=trainSizePerClass,
-                                              random_state=1):
+                                              random_state=0):
         # We only expect 1 loop
         assert(i == 0)
         i += 1

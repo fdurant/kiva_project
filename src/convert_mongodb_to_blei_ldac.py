@@ -79,7 +79,10 @@ class MyCorpus(object):
         for loan in self.cursor[:maxNrDocs]:
             if type(self.labelList) == type([]):
                 if args.classificationField == 'funding_ratio':
-                    fundingRatioLabel = getFundingRatioLabel(float(loan["funded_amount"]), float(loan["loan_amount"]))
+                    fundingRatioLabel = getFundingRatioLabel(float(loan["funded_amount"]),
+                                                             float(loan["loan_amount"]),
+                                                             posCutoff=1.0,
+                                                             negCutoff=1.0)
                     self.labelList.append((fundingRatioLabel,loan["id"]))
             rawDoc = loan["processed_description"]["texts"][self.langCode]
             sentences = sent_tokenize(rawDoc)

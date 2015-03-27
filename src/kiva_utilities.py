@@ -27,7 +27,7 @@ def getFundingRatioLabel(numerator, denominator, posCutoff=1.0, negCutoff=0.5):
     '''
     assert(numerator >= 0.0)
     assert(denominator >= 0.0)
-    assert(posCutoff > negCutoff)
+    assert(posCutoff >= negCutoff)
     ratio = float(numerator)/float(denominator)
     assert(ratio >= 0.0)
     if ratio >= posCutoff:

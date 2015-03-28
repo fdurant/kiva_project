@@ -1,16 +1,18 @@
 {
-    "content_scripts": [], 
-    "description": "Extension description", 
-    "creator": "Kango", 
+    "content_scripts": [
+        "add_loan_funding_gauge.js"
+    ], 
+    "description": "Kiva Loan Funding Prediction Gauge", 
+    "creator": "Frederik Durant", 
     "background_scripts": [
         "main.js"
     ], 
-    "homepage_url": "http://kangoextensions.com/", 
-    "version": "0.9.0", 
+    "homepage_url": "https://github.com/fdurant/kiva_project/tree/master/kivaLoanFundingViz", 
+    "version": "0.1.0", 
     "browser_button": {
-        "caption": "Kango", 
+        "caption": "Kiva Loan Funding Visualization", 
         "icon": "icons/button.png", 
-        "tooltipText": "Kango"
+        "tooltipText": "Kiva Loan Funding Viz"
     }, 
     "name": "Kiva Loan Funding Visualization"
 }

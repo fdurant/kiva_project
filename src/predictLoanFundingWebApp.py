@@ -59,7 +59,8 @@ class LoanFundingPrediction(Resource):
                             location='args',
                             required=True)
         args = parser.parse_args()
-        self.data = {"loanFundingScore": getLoanFundingScore(args['loanid'])}
+        self.data = {"loanFundingScore": getLoanFundingScore(args['loanid']),
+                     "loanId":args['loanid']}
         
     def get(self):
         self.representations = {

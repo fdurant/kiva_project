@@ -47,6 +47,15 @@ class KivaPartners(object):
     def getPartner(self,partnerId):
         return self.dict[partnerId]
 
+    def getMultiplePartnerFeatures(self, partnerId):
+        result = self.getPartner(partnerId).getMultipleFeatures()
+        for res in result:
+            if res[1] is None:
+                function = "self.getAverage%s()" % res[0]
+                # Replave in place by average value
+                res[1] = eval(function)
+        return result
+
 if __name__ == "__main__":
 
     partners = KivaPartners()

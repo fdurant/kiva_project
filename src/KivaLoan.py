@@ -1,7 +1,7 @@
 import urllib2
 import json
 from clean_kiva_descriptions import removeHtmlTags, identifyLanguagePerParagraph, date_hook
-from kiva_utilities import getMajorityGender
+from kiva_utilities import getMajorityGender, getFundingRatioLabel
 from datetime import datetime
 import re
 from math import log10
@@ -24,7 +24,6 @@ class KivaLoan(object):
             self.__initializeFromKivaApi__(self.id)
         self.__addProcessedDescription__()
 
-    @classmethod
     def __initializeFromKivaApi__(self,id):
         url = "http://api.kivaws.org/v1/loans/%d.json" % id
         response = urllib2.urlopen(url)
@@ -62,20 +61,40 @@ class KivaLoan(object):
     def getLoanAmount(self):
         return self.dict['loan_amount']
 
+    def getPartnerId(self):
+        return self.dict['partner_id']
+
+    def getFundedAmount(self):
+        return self.dict['funded_amount']
+
+    def getFundingRatioLabel(self):
+        return getFundingRatioLabel(self.getFundedAmount(), self.getLoanAmount(), posCutoff=1.0, negCutoff=1.0)
+
     def getLog10LoanAmount(self):
         return log10(self.getLoanAmount())
 
     def getBorrowers(self):
         return self.dict['borrowers']
 
-    def getMajorityGender(self):
-        return getMajorityGender(self.getBorrowers())
+    def getMajorityGender(self,transformCategorical=False):
+        result = getMajorityGender(self.getBorrowers())
+        if transformCategorical:
+            if result == u'M':
+                return 1
+            else:
+                return 0
+        else:
+            return result 
 
     def getImage(self):
         return self.dict['image']
 
-    def getHasImage(self):
-        return self.getImage() is not None
+    def getHasImage(self,transformCategorical=False):
+        result = self.getImage() is not None
+        if transformCategorical:
+            return 1 if result else 0
+        else:
+            return result
 
     def getPostedDayOfMonth(self):
         return self.dict['posted_date'].day
@@ -98,11 +117,19 @@ class KivaLoan(object):
     def getLog10NumberOfBorrowers(self):
         return log10(self.getNumberOfBorrowers())
 
-    def getBonusCreditEligibility(self):
-        return self.dict['bonus_credit_eligibility']
+    def getBonusCreditEligibility(self,transformCategorical=False):
+        result = self.dict['bonus_credit_eligibility']
+        if transformCategorical:
+            return 1 if result else 0
+        else:
+            return result
 
-    def getHasTranslator(self):
-        return self.dict.has_key('translator')
+    def getHasTranslator(self,transformCategorical=False):
+        result = self.dict.has_key('translator')
+        if transformCategorical:
+            return 1 if result else 0
+        else:
+            return result
 
     def getEnglishDescription(self):
         if self.dict['processed_description']['texts'].has_key('en'):
@@ -123,11 +150,29 @@ class KivaLoan(object):
         else:
             return log10(len)
 
-    def getMultipleFields(self, fieldList=[]):
+    def getMultipleFeatures(self, 
+                            fieldList=['LoanAmount',
+                                       'Log10LoanAmount',
+                                       'HasImage',
+                                       'MajorityGender',
+                                       'PostedDayOfMonth',
+                                       'PostedMonth',
+                                       'GeoLatitude',
+                                       'GeoLongitude',
+                                       'RepaymentTerm',
+                                       'Log10NumberOfBorrowers',
+                                       'BonusCreditEligibility',
+                                       'HasTranslator',
+                                       'Log10EnglishDescriptionLength'],
+                            transformCategorical=False):
         result = []
         for f in sorted(fieldList):
-            function = "self.get%s()" % f
-            result.append((f,eval(function)))
+            try:
+                function = "self.get%s(transformCategorical=transformCategorical)" % f
+                result.append((f,eval(function)))
+            except:
+                function = "self.get%s()" % f
+                result.append((f,eval(function)))                
         return result
 
 if __name__ == "__main__":
@@ -147,6 +192,9 @@ if __name__ == "__main__":
     loan1c = KivaLoan(dict=dict1)
     assert(loan1c.getId() == id1)
     assert(loan1c.getLoanAmount() == 725)
+    assert(loan1c.getPartnerId() == 185)
+    assert(loan1c.getFundedAmount() == 725)
+    assert(loan1c.getFundingRatioLabel() == 1)
     assert(round(pow(10,loan1c.getLog10LoanAmount())) == 725.0)
     assert(loan1c.getMajorityGender() == 'F')
     assert(loan1c.getHasImage())
@@ -163,19 +211,4 @@ if __name__ == "__main__":
     assert(loan1c.getEnglishDescriptionLength() == 86)
     assert(round(pow(10,loan1c.getLog10EnglishDescriptionLength())) == 86.0)
 
-    fields = []
-    fields.append('Id')
-    fields.append('LoanAmount')
-    fields.append('Log10LoanAmount')
-    fields.append('HasImage')
-    fields.append('MajorityGender')
-    fields.append('PostedDayOfMonth')
-    fields.append('PostedMonth')
-    fields.append('GeoLatitude')
-    fields.append('GeoLongitude')
-    fields.append('RepaymentTerm')
-    fields.append('Log10NumberOfBorrowers')
-    fields.append('BonusCreditEligibility')
-    fields.append('HasTranslator')
-    fields.append('Log10EnglishDescriptionLength')
-    print loan1c.getMultipleFields(fields)
+    print loan1c.getMultipleFeatures()

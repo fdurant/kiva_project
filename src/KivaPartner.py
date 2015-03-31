@@ -43,6 +43,21 @@ class KivaPartner(object):
         
     def getTotalAmountRaised(self):
         return self.dict['total_amount_raised']
+
+    def getMultipleFeatures(self,
+                            fieldList=['Rating',
+                                       'DelinquencyRate',
+                                       'LoansPosted',
+                                       'TotalAmountRaised']):
+        result = []
+        for f in sorted(fieldList):
+            function = "self.get%s()" % f
+            try:
+                res = (f,eval(function))
+            except:
+                res = (f,None)
+            result.append(res)
+        return result
         
 if __name__ == "__main__":
 

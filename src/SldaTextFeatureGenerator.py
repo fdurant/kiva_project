@@ -116,7 +116,7 @@ class SldaTextFeatureGenerator(object):
             unsortedGammas = re.split("\s+",line.rstrip('\n'))
             gammasThisLine = []
             for t in etaIndices:
-                gammasThisLine.append(float(unsortedGammas[t]))
+                gammasThisLine.append(("topic_%02d" % t,float(unsortedGammas[t])))
             gammas.append(gammasThisLine)
 
         if removeLabelFileLaterOn:
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     desc1 = kivaLoan1.getEnglishDescription()
 #    desc1 = "Yaqout lives in Al Hashmiya. Her father is employed in Saudi Arabia but his income does not cover all of the familys needs.\r\n\r\nShe has decided to study political management and seek work in this field. She is tired of the political and security situation in the world these days and wants to help find solutions for it. \r\n\r\nHer familys financial difficulty means they cannot cover all her university fees. Yaqout has applied for a loan to help pay her semester fees and achieve her dreams."
     descriptionList = [desc1]
-    sortedByDescendingEta1b = False
+    sortedByDescendingEta1b = True
     gammas1d =  slda1.getGammasFromDescriptions(descriptionList,
                                                 settingsFile=settingsFile1,
                                                 outDir='/tmp',
@@ -216,6 +216,6 @@ if __name__ == "__main__":
 
     topics1d = slda1.getTopics(nrWordsPerTopic=5, sortedByDescendingEta=sortedByDescendingEta1b, withEtas=False, withBetas=False)
     # Order the topics by most prominent to least prominent
-#    for entry in sorted(zip(topics1d,gammas1d), key=lambda x:x[1], reverse=True):
-#        print entry
+    for entry in sorted(zip(topics1d,gammas1d), key=lambda x:x[1][1], reverse=True):
+        print entry
 

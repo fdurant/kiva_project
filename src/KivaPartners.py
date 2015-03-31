@@ -49,12 +49,14 @@ class KivaPartners(object):
 
     def getMultiplePartnerFeatures(self, partnerId):
         result = self.getPartner(partnerId).getMultipleFeatures()
+        newResult = []
         for res in result:
             if res[1] is None:
                 function = "self.getAverage%s()" % res[0]
-                # Replave in place by average value
-                res[1] = eval(function)
-        return result
+                # Replace in place by average value
+                res = (res[0],eval(function))
+            newResult.append(res)
+        return newResult
 
 if __name__ == "__main__":
 

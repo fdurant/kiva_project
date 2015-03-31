@@ -47,7 +47,7 @@ class KivaLoanFundingPredictor(object):
         self.estimator.fit(self.X,self.y)
 
     def trainAndEvaluate(self, 
-                         cValues=[pow(10,x) for x in range(10)], 
+                         cValues=[pow(10,x-10) for x in range(20)], 
                          classWeight=None, 
                          scorerType='roc_auc', 
                          nrCrossValidationFolds=10):

@@ -7,7 +7,6 @@ class KivaLoans(object):
     ''' Class representing a collection of loans at kiva.org '''
 
     def __init__(self, loanIdList=None, loanDictList=None):
-        assert(loanIdList or loanDictList), "At least one named argument must differ from None"
         self.list = []
         self.dict = {}
 
@@ -17,11 +16,16 @@ class KivaLoans(object):
                 self.list.append(loan)
                 self.dict[loan.getId()] = loan
 
-        if loanDictList:
+        elif loanDictList:
             for loanDict in loanDictList:
                 loan = KivaLoan(dict=loanDict)
                 self.list.append(loan)
                 self.dict[loan.getId()] = loan
+                
+    def push(self, loan):
+        assert(type(loan).__name__ == 'KivaLoan')
+        self.list.append(loan)
+        self.dict[loan.getId()] = loan
 
     def getLoans(self):
         return self.list

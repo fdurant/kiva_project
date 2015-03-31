@@ -10,7 +10,7 @@ from KivaPartners import KivaPartners
 from SldaTextFeatureGenerator import SldaTextFeatureGenerator
 import sys
 from os.path import expanduser
-from sklearn.externals import joblib
+import pickle
 from math import log10
 
 class KivaLoanFundingPredictor(object):
@@ -95,10 +95,10 @@ class KivaLoanFundingPredictor(object):
         return self.estimator.predict_proba(X_scaled)
 
     def saveToDisk(self, pathToFile='/tmp/kivaLoanFundingPredictor.pkl'):
-        joblib.dump(self.estimator, pathToFile)
+        pickle.dump(self.estimator, open(pathToFile,"wb"))
 
     def loadFromDisk(self, pathToFile='/tmp/kivaLoanFundingPredictor.pkl'):
-        self.estimator = joblib.load(pathToFile)
+        self.estimator = pickle.load(open(pathToFile, "rb"))
 
 if __name__ == "__main__":
     

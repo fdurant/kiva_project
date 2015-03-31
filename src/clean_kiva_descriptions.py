@@ -2,6 +2,7 @@ import re
 import langid
 import codecs
 import sys
+from datetime import datetime
 
 # Copied from http://stackoverflow.com/questions/8793448/how-to-convert-to-a-python-datetime-object-with-json-loads
 def date_hook(json_dict):

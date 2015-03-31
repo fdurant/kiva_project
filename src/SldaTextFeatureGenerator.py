@@ -89,8 +89,10 @@ class SldaTextFeatureGenerator(object):
         or from large to low eta '''
 
         # If no labelFile is given, we need to create (a fake one) ourselves, just for the sake of sLDA
+        removeLabelFileLaterOn = False
         if labelFile is None:
-            labelFile = "%s/%s" % (outDir,'dummy_label_file_with_random_contents.dat')
+            removeLabelFileLaterOn = True
+            labelFile = "%s/%s_%s.dat" % (outDir,'dummy_label_file_with_random_contents', os.getpid())
             labelFH = open(labelFile, 'wb')
             dataFH = open(dataFile, 'rb')
             for line in dataFH:
@@ -117,6 +119,9 @@ class SldaTextFeatureGenerator(object):
                 gammasThisLine.append(float(unsortedGammas[t]))
             gammas.append(gammasThisLine)
 
+        if removeLabelFileLaterOn:
+            os.remove(labelFile)
+
         return gammas
 
     def getGammasFromDescriptions(self, descriptionList=None, settingsFile=None, outDir='/tmp', sortedByDescendingEta=False):
@@ -125,7 +130,7 @@ class SldaTextFeatureGenerator(object):
         
         bowList = []
         # First we need to convert each description in a Bag-Of-Words representation, and save that as a DataFile
-        tmpDataFile = "%s/%s" % (outDir,'temporary_data_file.dat')
+        tmpDataFile = "%s/%s_%s.dat" % (outDir,'temporary_data_file', os.getpid())
         tmpDataFH = open(tmpDataFile, 'wb')
         for desc in descriptionList:
             sentences = sent_tokenize(desc)
@@ -137,11 +142,14 @@ class SldaTextFeatureGenerator(object):
             tmpDataFH.write("\n")
         tmpDataFH.close()
 
-        return self.getGammasFromDataFile(dataFile=tmpDataFile, 
-                                          labelFile=None, 
-                                          settingsFile=settingsFile,
-                                          outDir=outDir, 
-                                          sortedByDescendingEta=sortedByDescendingEta)
+        result = self.getGammasFromDataFile(dataFile=tmpDataFile, 
+                                            labelFile=None, 
+                                            settingsFile=settingsFile,
+                                            outDir=outDir, 
+                                            sortedByDescendingEta=sortedByDescendingEta)
+
+        os.remove(tmpDataFile)
+        return result
 
 if __name__ == "__main__":
 
@@ -196,14 +204,15 @@ if __name__ == "__main__":
                                            sortedByDescendingEta=False)[0]
     assert(len(gammas1c) > 0)
 
-#    kivaLoan1 = KivaLoan(id=844974)
-    desc1 = "Yaqout lives in Al Hashmiya. Her father is employed in Saudi Arabia but his income does not cover all of the familys needs.\r\n\r\nShe has decided to study political management and seek work in this field. She is tired of the political and security situation in the world these days and wants to help find solutions for it. \r\n\r\nHer familys financial difficulty means they cannot cover all her university fees. Yaqout has applied for a loan to help pay her semester fees and achieve her dreams."
+    kivaLoan1 = KivaLoan(id=844974)
+    desc1 = kivaLoan1.getEnglishDescription()
+#    desc1 = "Yaqout lives in Al Hashmiya. Her father is employed in Saudi Arabia but his income does not cover all of the familys needs.\r\n\r\nShe has decided to study political management and seek work in this field. She is tired of the political and security situation in the world these days and wants to help find solutions for it. \r\n\r\nHer familys financial difficulty means they cannot cover all her university fees. Yaqout has applied for a loan to help pay her semester fees and achieve her dreams."
     descriptionList = [desc1]
     sortedByDescendingEta1b = False
     gammas1d =  slda1.getGammasFromDescriptions(descriptionList,
-                                          settingsFile=settingsFile1,
-                                          outDir='/tmp',
-                                          sortedByDescendingEta=sortedByDescendingEta1b)[0]
+                                                settingsFile=settingsFile1,
+                                                outDir='/tmp',
+                                                sortedByDescendingEta=sortedByDescendingEta1b)[0]
 
     topics1d = slda1.getTopics(nrWordsPerTopic=5, sortedByDescendingEta=sortedByDescendingEta1b, withEtas=False, withBetas=False)
     # Order the topics by most prominent to least prominent

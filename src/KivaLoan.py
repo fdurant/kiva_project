@@ -68,8 +68,14 @@ class KivaLoan(object):
     def getBorrowers(self):
         return self.dict['borrowers']
 
+    def getMajorityGender(self):
+        return getMajorityGender(self.getBorrowers())
+
     def getImage(self):
         return self.dict['image']
+
+    def getHasImage(self):
+        return self.getImage() is not None
 
     def getPostedDayOfMonth(self):
         return self.dict['posted_date'].day
@@ -117,6 +123,13 @@ class KivaLoan(object):
         else:
             return log10(len)
 
+    def getMultipleFields(self, fieldList=[]):
+        result = []
+        for f in sorted(fieldList):
+            function = "self.get%s()" % f
+            result.append((f,eval(function)))
+        return result
+
 if __name__ == "__main__":
 
     dict1 = {"id":844974,"name":"Yaqout","description":{"languages":["en"],"texts":{"en":"Yaqout lives in Al Hashmiya. Her father is employed in Saudi Arabia but his income does not cover all of the family's needs.\r\n\r\nShe has decided to study political management and seek work in this field. She is tired of the political and security situation in the world these days and wants to help find solutions for it. \r\n\r\nHer family's financial difficulty means they cannot cover all her university fees. Yaqout has applied for a loan to help pay her semester fees and achieve her dreams."}},"status":"in_repayment","funded_amount":725,"paid_amount":67.06,"image":{"id":1821760,"template_id":1},"activity":"Higher education costs","sector":"Education","themes":["Higher Education"],"use":"To pay semester fees","location":{"country_code":"JO","country":"Jordan","town":"Hashmiya","geo":{"level":"country","pairs":"31 36","type":"point"}},"partner_id":185,"posted_date":datetime.strptime("2015-02-26T17:40:08Z","%Y-%m-%dT%H:%M:%SZ"),"planned_expiration_date":"2015-03-28T17:40:07Z","loan_amount":725,"lender_count":24,"bonus_credit_eligibility":True,"tags":[{"name":"user_favorite"}],"borrowers":[{"first_name":"Yaqout","last_name":"","gender":"F","pictured":True}],"terms":{"disbursal_date":"2015-02-18T08:00:00Z","disbursal_currency":"JOD","disbursal_amount":500,"repayment_interval":"Monthly","repayment_term":15,"loan_amount":725,"local_payments":[{"due_date":"2015-04-04T07:00:00Z","amount":46.25},{"due_date":"2015-05-05T07:00:00Z","amount":41.25},{"due_date":"2015-06-04T07:00:00Z","amount":41.25},{"due_date":"2015-07-05T07:00:00Z","amount":41.25},{"due_date":"2015-08-04T07:00:00Z","amount":41.25},{"due_date":"2015-09-04T07:00:00Z","amount":41.25},{"due_date":"2015-10-05T07:00:00Z","amount":41.25},{"due_date":"2015-11-04T08:00:00Z","amount":41.25},{"due_date":"2015-12-05T08:00:00Z","amount":41.25},{"due_date":"2016-01-04T08:00:00Z","amount":41.25},{"due_date":"2016-02-04T08:00:00Z","amount":41.25},{"due_date":"2016-03-06T08:00:00Z","amount":41.25}],"scheduled_payments":[{"due_date":"2015-06-01T07:00:00Z","amount":67.07},{"due_date":"2015-07-01T07:00:00Z","amount":59.82},{"due_date":"2015-08-01T07:00:00Z","amount":59.82},{"due_date":"2015-09-01T07:00:00Z","amount":59.81},{"due_date":"2015-10-01T07:00:00Z","amount":59.81},{"due_date":"2015-11-01T07:00:00Z","amount":59.81},{"due_date":"2015-12-01T08:00:00Z","amount":59.81},{"due_date":"2016-01-01T08:00:00Z","amount":59.81},{"due_date":"2016-02-01T08:00:00Z","amount":59.81},{"due_date":"2016-03-01T08:00:00Z","amount":59.81},{"due_date":"2016-04-01T07:00:00Z","amount":59.81},{"due_date":"2016-05-01T07:00:00Z","amount":59.81}],"loss_liability":{"nonpayment":"lender","currency_exchange":"shared","currency_exchange_coverage_rate":0.1}},"payments":[{"amount":67.06,"local_amount":46.25,"processed_date":"2015-02-28T08:00:00Z","settlement_date":"2015-03-19T10:56:36Z","rounded_local_amount":47.56,"currency_exchange_loss_amount":0,"payment_id":624884967}],"funded_date":"2015-02-26T21:01:34Z","journal_totals":{"entries":0,"bulkEntries":0},"translator":{"byline":"Michael Ernest","image":627833}}
@@ -135,8 +148,8 @@ if __name__ == "__main__":
     assert(loan1c.getId() == id1)
     assert(loan1c.getLoanAmount() == 725)
     assert(round(pow(10,loan1c.getLog10LoanAmount())) == 725.0)
-    assert(getMajorityGender(loan1c.getBorrowers()) == 'F')
-    assert(loan1c.getImage() is not None)
+    assert(loan1c.getMajorityGender() == 'F')
+    assert(loan1c.getHasImage())
     assert(loan1c.getPostedDayOfMonth() == 26)
     assert(loan1c.getPostedMonth() == 2)
     assert(loan1c.getGeoLatitude() == 31.0)
@@ -149,3 +162,20 @@ if __name__ == "__main__":
     assert(len(loan1c.getEnglishDescription()) == 487)
     assert(loan1c.getEnglishDescriptionLength() == 86)
     assert(round(pow(10,loan1c.getLog10EnglishDescriptionLength())) == 86.0)
+
+    fields = []
+    fields.append('Id')
+    fields.append('LoanAmount')
+    fields.append('Log10LoanAmount')
+    fields.append('HasImage')
+    fields.append('MajorityGender')
+    fields.append('PostedDayOfMonth')
+    fields.append('PostedMonth')
+    fields.append('GeoLatitude')
+    fields.append('GeoLongitude')
+    fields.append('RepaymentTerm')
+    fields.append('Log10NumberOfBorrowers')
+    fields.append('BonusCreditEligibility')
+    fields.append('HasTranslator')
+    fields.append('Log10EnglishDescriptionLength')
+    print loan1c.getMultipleFields(fields)

@@ -100,8 +100,8 @@ class LoanFundingPrediction(Resource):
         gammas = kivaLoans.getTopicFeatures(slda=slda, settingsFile=settingsFile)[0]
         topics = slda.getTopics(nrWordsPerTopic=10, sortedByDescendingEta=False, withEtas=False, withBetas=False)
         
-        print "gammas =", gammas
-        print "topics =", topics
+#        print "gammas =", gammas
+#        print "topics =", topics
 
         topicScores = sorted(zip(topics,gammas), key=lambda x:x[1][1], reverse=True)
 

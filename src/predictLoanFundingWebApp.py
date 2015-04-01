@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request, send_from_directory
 from flask_restful import reqparse, abort, Api, Resource
 from sklearn.linear_model import LogisticRegression
 import numpy as np
@@ -27,7 +27,7 @@ def getLoanFundingScore(kivaLoans):
     return (probaList[0].tolist()[1],predictions[0])
 
 # Initialize the app
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/home/fdurant/work/metis_projects/passion_project/kiva_project/kivaLoanFundingViz')
 api = Api(app)
 
 global predictor
@@ -118,6 +118,10 @@ class LoanFundingPrediction(Resource):
         
 api.add_resource(Usage, '/')
 api.add_resource(LoanFundingPrediction, '/kivapredictor/api/v1.0/loanprediction')
+
+@app.route('/images/<path:filename>')
+def send_images(filename):
+    return send_from_directory('/home/fdurant/work/metis_projects/passion_project/kiva_project/kivaLoanFundingViz/images', filename)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

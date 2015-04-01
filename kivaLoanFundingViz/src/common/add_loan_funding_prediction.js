@@ -44,6 +44,10 @@ function init() {
 			$( "div#container" ).text("A priori funding probability: " + 
 						  Math.round(data['loanFundingScore']*100) +
 						  "%");
+			prediction = data['prediction'];
+			imgFileName = (prediction == 1) ? 'thumbs_up.png' : 'thumbs_down.png';
+			imgUrl = 'http://104.236.210.43/images/' + imgFileName;
+			$( "div#container" ).prepend('<img width="46" height="60" src="'+imgUrl+'" style="float:right;"/>');
 		        // Three most prominent topics
 			var nrWordsPerTopics = 10;
 			var topicScores = data['topicScores'];

@@ -7,16 +7,48 @@ import numpy as np
 import pandas as pd
 from random import random
 import json
+import pickle
+from KivaLoans import KivaLoans
+from KivaLoan import KivaLoan
+from KivaLoanFundingPredictor import KivaLoanFundingPredictor
+from os.path import expanduser
+from SldaTextFeatureGenerator import SldaTextFeatureGenerator
 
-# IMPORT LOADING AND CREATION OF DEPLOYED MODELS IN SEPARATE PYTHON MODULES
-# IDEM FOR ON THE FLY PREPROCESSING OF ALL PREVIOUSLY UNSEEN KIVA LOANS
+def getLoanFundingScore(kivaLoans):
+    loans = kivaLoans.getLoanIds()
 
-def getLoanFundingScore(loanId=-1):
-    return random()
+    columns, features = kivaLoans.getAllFeatures(slda, settingsFile, transformCategorical=True)
+
+    loansDF = pd.DataFrame.from_items(zip(loans, features), columns=columns, orient='index')
+
+    probaList = predictor.predict_proba(X=loansDF)
+    predictions = predictor.predict(X=loansDF)
+
+    return (probaList[0].tolist()[1],predictions[0])
 
 # Initialize the app
 app = Flask(__name__)
 api = Api(app)
+
+global predictor
+predictor = KivaLoanFundingPredictor()
+predictor.loadFromDisk('data/predicting_funding/logres_out/kivaLoanFundingPredictor.pkl')
+
+global slda
+homeDir = expanduser("~")
+projectDir = "%s/%s" % (homeDir, 'work/metis_projects/passion_project/kiva_project')
+sldaBin = "%s/%s" % (homeDir, 'install/slda-master/slda')
+modelFileBin = "%s/%s" % (projectDir, 'data/predicting_funding/slda_out/final.model')
+modelFileTxt = "%s/%s" % (projectDir, 'data/predicting_funding/slda_out/final.model.text')
+dictionaryFile = "%s/%s" % (projectDir, 'data/predicting_funding/kiva_dict.txt')
+vocabFile = "%s/%s" % (projectDir, 'data/predicting_funding/kiva.lda-c.vocab')
+slda = SldaTextFeatureGenerator(modelFileBin=modelFileBin,
+                                modelFileTxt=modelFileTxt,
+                                dictionaryFile=dictionaryFile,
+                                vocabFile=vocabFile,
+                                sldaBin=sldaBin)
+global settingsFile
+settingsFile = "%s/%s" % (projectDir, 'data/predicting_funding/slda_settings.txt')
 
 @api.representation('application/json')
 def output_json(data, code, headers=None):
@@ -39,7 +71,7 @@ def output_html(data, code, headers=None):
 
 class Usage(Resource):
     def __init__(self):
-        exampleUri = "http://104.236.210.43/kivapredictor/api/v1.0/loanprediction?loanid=185"
+        exampleUri = "http://104.236.210.43/kivapredictor/api/v1.0/loanprediction?loanid=844974"
         self.data = {"Usage": '<a href="%s">%s</a>' % (exampleUri, exampleUri)}
 
     def get(self):
@@ -59,8 +91,24 @@ class LoanFundingPrediction(Resource):
                             location='args',
                             required=True)
         args = parser.parse_args()
-        self.data = {"loanFundingScore": getLoanFundingScore(args['loanid']),
-                     "loanId":args['loanid']}
+        
+        kivaLoan = KivaLoan(id=args['loanid'])
+        kivaLoans = KivaLoans()
+        kivaLoans.push(kivaLoan)
+
+        (proba, prediction) = getLoanFundingScore(kivaLoans)
+        gammas = kivaLoans.getTopicFeatures(slda=slda, settingsFile=settingsFile)[0]
+        topics = slda.getTopics(nrWordsPerTopic=10, sortedByDescendingEta=False, withEtas=False, withBetas=False)
+        
+        print "gammas =", gammas
+        print "topics =", topics
+
+        topicScores = sorted(zip(topics,gammas), key=lambda x:x[1][1], reverse=True)
+
+        self.data = {"loanFundingScore": proba,
+                     "loanId":args['loanid'],
+                     "prediction": prediction,
+                     "topicScores": topicScores}
         
     def get(self):
         self.representations = {

@@ -2,7 +2,7 @@ import urllib2
 import json
 from clean_kiva_descriptions import removeHtmlTags, identifyLanguagePerParagraph, date_hook
 from kiva_utilities import getMajorityGender, getFundingRatioLabel
-from datetime import datetime
+from datetime import datetime, date
 import re
 from math import log10
 import langid
@@ -97,10 +97,16 @@ class KivaLoan(object):
             return result
 
     def getPostedDayOfMonth(self):
-        return self.dict['posted_date'].day
+        try:
+            return self.dict['posted_date'].day
+        except:
+            return date.today().day
 
     def getPostedMonth(self):
-        return self.dict['posted_date'].month
+        try:
+            return self.dict['posted_date'].month
+        except:
+            return date.today().month
 
     def getGeoLatitude(self):
         return float(re.split("\s+",self.dict['location']['geo']['pairs'])[0])
@@ -198,8 +204,8 @@ if __name__ == "__main__":
     assert(round(pow(10,loan1c.getLog10LoanAmount())) == 725.0)
     assert(loan1c.getMajorityGender() == 'F')
     assert(loan1c.getHasImage())
-    assert(loan1c.getPostedDayOfMonth() == 26)
-    assert(loan1c.getPostedMonth() == 2)
+    assert(loan1c.getPostedDayOfMonth() == 26),"found %d" % loan1c.getPostedDayOfMonth()
+    assert(loan1c.getPostedMonth() == 2),"found %d" % loan1c.getPostedMonth()
     assert(loan1c.getGeoLatitude() == 31.0)
     assert(loan1c.getGeoLongitude() == 36.0)
     assert(loan1c.getRepaymentTerm() == 15)

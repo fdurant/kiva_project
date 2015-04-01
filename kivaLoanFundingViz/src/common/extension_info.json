@@ -1,8 +1,8 @@
 {
     "content_scripts": [
-        "add_loan_funding_gauge.js"
+        "add_loan_funding_prediction.js"
     ], 
-    "description": "Kiva Loan Funding Prediction Gauge", 
+    "description": "Kiva Loan Funding Visualization", 
     "creator": "Frederik Durant", 
     "background_scripts": [
         "main.js"

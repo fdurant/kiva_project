@@ -157,8 +157,7 @@ class KivaLoan(object):
             return log10(len)
 
     def getMultipleFeatures(self, 
-                            fieldList=['LoanAmount',
-                                       'Log10LoanAmount',
+                            fieldList=['Log10LoanAmount',
                                        'HasImage',
                                        'MajorityGender',
                                        'PostedDayOfMonth',

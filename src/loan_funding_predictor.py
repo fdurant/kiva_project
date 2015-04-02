@@ -96,7 +96,52 @@ if __name__ == "__main__":
     predictor.feedDataFrames(X=trainDF, y=groundTruthLabels)
     print >> sys.stderr, "done"
 
-    predictor.trainAndEvaluate(nrCrossValidationFolds=10)
+    # Functions
+    def runExperiment(featureGroupConfig):
+        flatFeatureList = [val for featureGroup in featureGroupConfig for val in featureGroup]
+        predictor.setActiveColumns(featuresToUse=flatFeatureList)
+        return predictor.trainAndEvaluate(nrCrossValidationFolds=10)
+
+    # From here on, play with various combinations of features
+    featureGroups = []
+    # IN ORDER OF CONTRIBUTION
+    featureGroups.append(['Log10LoanAmount'])
+    featureGroups.append(['topic_00', 'topic_01', 'topic_02', 'topic_03', 'topic_04', 
+                          'topic_05', 'topic_06', 'topic_07', 'topic_08', 'topic_09', 
+                          'topic_10', 'topic_11', 'topic_12', 'topic_13', 'topic_14', 
+                          'topic_15', 'topic_16', 'topic_17', 'topic_18', 'topic_19'])
+    featureGroups.append(['MajorityGender'])
+    featureGroups.append(['PostedDayOfMonth', 'PostedMonth'])
+    featureGroups.append(['Log10NumberOfBorrowers'])
+    featureGroups.append(['LoansPosted','TotalAmountRaised'])
+    featureGroups.append(['GeoLatitude', 'GeoLongitude'])
+    featureGroups.append(['RepaymentTerm'])
+    featureGroups.append(['BonusCreditEligibility'])
+    featureGroups.append(['DelinquencyRate', 'Rating'])
+    featureGroups.append(['Log10EnglishDescriptionLength'])
+    featureGroups.append(['HasImage', 'HasTranslator'])
+
+    baselineFeatureGroup = ['Baseline']
+
+    config = []
+    config.append(baselineFeatureGroup)
+    experimentalResults = runExperiment(config)
+    bestResult = experimentalResults[0]
+    bestConfig = config
+    print >> sys.stderr, "config ", config,
+    print >> sys.stderr, ": ", experimentalResults
+    for f in featureGroups:
+        config.append(f)
+        experimentalResults = runExperiment(config)
+        print >> sys.stderr, "config ", config,
+        print >> sys.stderr, ": ", experimentalResults
+        if experimentalResults[0] > bestResult:
+            bestResult = experimentalResults[0]
+            bestConfig = config
+            print "BETTER RESULT!"
+
+    print "bestResult =", bestResult
+    print "bestConfig =", bestConfig
 
     print >> sys.stderr, "Saving best classifier to disk ...",
     predictor.saveToDisk(pathToFile=args.logResModelFile)

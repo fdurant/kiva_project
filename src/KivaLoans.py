@@ -57,14 +57,17 @@ class KivaLoans(object):
         topicFeatures = self.getTopicFeatures(slda=slda, settingsFile=settingsFile)
         loanFeatures = self.getLoanFeatures(transformCategorical=transformCategorical)
         partnerFeatures = self.getPartnerFeatures()
+        baselineFeature = [[('Baseline',1.0)] for i in range(len(partnerFeatures))]
 
         columns = []
+        columns.extend([f[0] for f in baselineFeature[0]])
         columns.extend([f[0] for f in loanFeatures[0]])
         columns.extend([f[0] for f in topicFeatures[0]])
         columns.extend([f[0] for f in partnerFeatures[0]])
 
         for i in range(len(self.list)):
             mergedFeatures = []
+            mergedFeatures.extend([f[1] for f in baselineFeature[i]])
             mergedFeatures.extend([f[1] for f in loanFeatures[i]])
             mergedFeatures.extend([f[1] for f in topicFeatures[i]])
             mergedFeatures.extend([f[1] for f in partnerFeatures[i]])

@@ -26,11 +26,26 @@ class KivaLoanFundingPredictor(object):
 
     def __init__(self):
         pass
+    
+    def setActiveColumns(self, featuresToUse=['Baseline']):
+        if featuresToUse:
+            self.activeColumnIndices = [i for i in range(len(self.columns)) if self.columns[i] in featuresToUse]
+        else:
+            self.activeColumnIndices = range(len(self.columns))        
+
+    def getAvailableColumns(self):
+        return self.columns
+
+    def getActiveColumns(self):
+        return [self.columns[i] for i in self.activeColumnIndices]
 
     def feedDataFrames(self, X, y):
         assert(type(X) == type(pd.DataFrame()))
         assert(type(y) in [type(pd.Series()), type([])])
         assert(X.shape[0] == len(y))
+
+        self.columns = X.columns.values
+        self.activeColumnIndices = range(len(self.columns))
 
         # We store the scaler so we can reapply it at runtime at unseen instances!
         # See http://scikit-learn.org/stable/modules/preprocessing.html
@@ -44,7 +59,7 @@ class KivaLoanFundingPredictor(object):
         # Necessary for logistic regression
 
         self.estimator = estimator
-        self.estimator.fit(self.X,self.y)
+        self.estimator.fit(self.X[:,self.activeColumnIndices],self.y)
 
     def trainAndEvaluate(self, 
                          cValues=[pow(10,x-10) for x in range(20)], 
@@ -61,7 +76,7 @@ class KivaLoanFundingPredictor(object):
             print >> sys.stderr, "(%d/%d) Building logres model for C value %1.15f ..." % (i+1,len(cValues),c),
             estimator = LogisticRegression(C=c,class_weight=classWeight)
             print >> sys.stderr, "applying it ...",
-            scores = cross_val_score(estimator, self.X, y=self.y, scoring=scorerType, cv=cvGenerator, n_jobs=1)
+            scores = cross_val_score(estimator, self.X[:,self.activeColumnIndices], y=self.y, scoring=scorerType, cv=cvGenerator, n_jobs=1)
             estimators.append(estimator)
             scoreList.append((scores.mean(),scores.std()))
             print >> sys.stderr, "done"
@@ -80,19 +95,19 @@ class KivaLoanFundingPredictor(object):
         
         # Keep the best model as the final predictor, so it can be saved to disk
         self.estimator = estimators[bestModelIndex]
-        self.estimator.fit(self.X,self.y)
+        self.estimator.fit(self.X[:,self.activeColumnIndices],self.y)
 
         return (scoreList[bestModelIndex])
 
     def predict(self, X):
         assert(type(X) == type(pd.DataFrame()))
         X_scaled = self.scaler.transform(X.astype(float))
-        return self.estimator.predict(X_scaled)
+        return self.estimator.predict(X_scaled[:,self.activeColumnIndices])
 
     def predict_proba(self, X):
         assert(type(X) == type(pd.DataFrame()))
         X_scaled = self.scaler.transform(X.astype(float))
-        return self.estimator.predict_proba(X_scaled)
+        return self.estimator.predict_proba(X_scaled[:,self.activeColumnIndices])
 
     def saveToDisk(self, pathToFile='/tmp/kivaLoanFundingPredictor.pkl'):
         toBePickled = (self.estimator,self.scaler)
@@ -152,8 +167,8 @@ if __name__ == "__main__":
     # Preparing dataframe
     trainDF = pd.DataFrame.from_items(zip(kivaToyLoanIdCollection, allFeatures), columns=columns, orient='index')
 
-#    print >> sys.stderr, "columns = ", columns
-#    print >> sys.stderr, 'trainDF.head(3) = ', trainDF.head(3)
+    print >> sys.stderr, "columns = ", columns
+    print >> sys.stderr, 'trainDF.head(3) = ', trainDF.head(3)
 
     predictor = KivaLoanFundingPredictor()
     predictor.feedDataFrames(X=trainDF, y=groundTruthLabels)
@@ -174,11 +189,22 @@ if __name__ == "__main__":
 
     predictor.loadFromDisk()
 
+    # With all columns active
+    print "Active columns = ", predictor.getActiveColumns()
     probaList = predictor.predict_proba(X=unseenDF)
     predictions = predictor.predict(X=unseenDF)
 
-#    print >> sys.stderr, 'unseenDF.head(3) = ', unseenDF.head(3)
+    print >> sys.stderr, "probaList = ", probaList
+    print >> sys.stderr, "predictions = ", predictions
+
+    # With only some columns active
+    predictor.setActiveColumns(['MajorityGender'])
+    predictor.trainAndEvaluate(nrCrossValidationFolds=2)
+
+    print "Active columns = ", predictor.getActiveColumns()
+    probaList = predictor.predict_proba(X=unseenDF)
+    predictions = predictor.predict(X=unseenDF)
 
     print >> sys.stderr, "probaList = ", probaList
     print >> sys.stderr, "predictions = ", predictions
-    
+

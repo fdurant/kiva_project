@@ -110,11 +110,11 @@ class KivaLoanFundingPredictor(object):
         return self.estimator.predict_proba(X_scaled[:,self.activeColumnIndices])
 
     def saveToDisk(self, pathToFile='/tmp/kivaLoanFundingPredictor.pkl'):
-        toBePickled = (self.estimator,self.scaler)
+        toBePickled = (self.estimator, self.scaler, self.columns, self.activeColumnIndices)
         pickle.dump(toBePickled, open(pathToFile,"wb"))
 
     def loadFromDisk(self, pathToFile='/tmp/kivaLoanFundingPredictor.pkl'):
-        (self.estimator, self.scaler) = pickle.load(open(pathToFile, "rb"))
+        (self.estimator, self.scaler, self.columns, self.activeColumnIndices) = pickle.load(open(pathToFile, "rb"))
 
 if __name__ == "__main__":
     

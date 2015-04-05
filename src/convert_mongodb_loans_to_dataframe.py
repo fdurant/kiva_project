@@ -11,7 +11,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataDir', help='Directory for writing the dataframe', required=True)
 parser.add_argument('--baseName', help='Base name for the dataframe file', required=True)
-parser.add_argument('--startYear', help='Get all documents starting with this year', default=2015)
+parser.add_argument('--startYear', help='Discard documents posted before this year', default=2015)
+parser.add_argument('--endYear', help='Discard documents posted after this year', default=2015)
 args = parser.parse_args()
 
 client = MongoClient()
@@ -22,9 +23,14 @@ langName="english"
 loansCollection = client.kiva.loans
 
 startYear = int(args.startYear)
-start = datetime(startYear, 1, 1)
+startDate = datetime(startYear, 1, 1)
+endYear = int(args.endYear)
+endDate = datetime(endYear, 12, 31, 23, 59, 59)
 print >> sys.stderr, "Creating MongoDB cursor ...",
-c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : start }},
+c = loansCollection.find({"$and" : [{"$and" : [{"posted_date" : { "$gte" : startDate }},
+                                              {"posted_date" : { "$lte" : endDate }}
+                                              ]
+                                    },
                                     {"processed_description.texts.%s" % langCode :{'$exists': True}}
                                     ]
                           })

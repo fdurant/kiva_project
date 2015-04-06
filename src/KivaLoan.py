@@ -199,6 +199,7 @@ class KivaLoan(object):
 
     def getMultipleFeatures(self, 
                             fieldList=['Log10LoanAmount',
+                                       'HasImage',
                                        'MajorityGender',
                                        'PostedMonthJan',
                                        'PostedMonthFeb',
@@ -216,7 +217,9 @@ class KivaLoan(object):
                                        'GeoLongitude',
                                        'RepaymentTerm',
                                        'Log10NumberOfBorrowers',
-                                       'BonusCreditEligibility'],
+                                       'BonusCreditEligibility',
+                                       'HasTranslator',
+                                       'Log10EnglishDescriptionLength'],
                             transformCategorical=False):
         result = []
         for f in sorted(fieldList):

@@ -119,8 +119,8 @@ class SldaTextFeatureGenerator(object):
                 gammasThisLine.append(("topic_%02d" % t,float(unsortedGammas[t])))
             gammas.append(gammasThisLine)
 
-        if removeLabelFileLaterOn:
-            os.remove(labelFile)
+#        if removeLabelFileLaterOn:
+#            os.remove(labelFile)
 
         return gammas
 
@@ -148,7 +148,7 @@ class SldaTextFeatureGenerator(object):
                                             outDir=outDir, 
                                             sortedByDescendingEta=sortedByDescendingEta)
 
-        os.remove(tmpDataFile)
+#        os.remove(tmpDataFile)
         return result
 
 if __name__ == "__main__":

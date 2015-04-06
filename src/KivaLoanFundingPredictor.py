@@ -109,6 +109,10 @@ class KivaLoanFundingPredictor(object):
         X_scaled = self.scaler.transform(X.astype(float))
         return self.estimator.predict_proba(X_scaled[:,self.activeColumnIndices])
 
+    def getCoefficients(self):
+        # There is only one class to predict, so we return the first element only
+        return self.estimator.coef_[0]
+
     def saveToDisk(self, pathToFile='/tmp/kivaLoanFundingPredictor.pkl'):
         toBePickled = (self.estimator, self.scaler, self.columns, self.activeColumnIndices)
         pickle.dump(toBePickled, open(pathToFile,"wb"))

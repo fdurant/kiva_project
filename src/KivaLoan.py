@@ -102,11 +102,49 @@ class KivaLoan(object):
         except:
             return date.today().day
 
-    def getPostedMonth(self):
+    def getPostedMonth(self, testedMonth):
+        assert(testedMonth in range(1,13))
         try:
-            return self.dict['posted_date'].month
+            actualMonth = self.dict['posted_date'].month
+            return actualMonth == testedMonth
         except:
-            return date.today().month
+            return False
+
+    def getPostedMonthJan(self):
+        return self.getPostedMonth(1)
+
+    def getPostedMonthFeb(self):
+        return self.getPostedMonth(2)
+
+    def getPostedMonthMar(self):
+        return self.getPostedMonth(3)
+
+    def getPostedMonthApr(self):
+        return self.getPostedMonth(4)
+
+    def getPostedMonthMay(self):
+        return self.getPostedMonth(5)
+
+    def getPostedMonthJun(self):
+        return self.getPostedMonth(6)
+
+    def getPostedMonthJul(self):
+        return self.getPostedMonth(7)
+
+    def getPostedMonthAug(self):
+        return self.getPostedMonth(8)
+
+    def getPostedMonthSep(self):
+        return self.getPostedMonth(9)
+
+    def getPostedMonthOct(self):
+        return self.getPostedMonth(10)
+
+    def getPostedMonthNov(self):
+        return self.getPostedMonth(11)
+
+    def getPostedMonthDec(self):
+        return self.getPostedMonth(12)
 
     def getGeoLatitude(self):
         return float(re.split("\s+",self.dict['location']['geo']['pairs'])[0])
@@ -138,14 +176,17 @@ class KivaLoan(object):
             return result
 
     def getEnglishDescription(self):
-        if self.dict['processed_description']['texts'].has_key('en'):
+        try:
             return self.dict['processed_description']['texts']['en']
+        except:
+            # Description containing one bogus word
+            return "fkdsfkdsjfkl"
 
     def getEnglishDescriptionLength(self):
-        if self.dict['processed_description']['texts'].has_key('en'):
+        try:
             # Poor man's tokenization good enough here
             return len(re.split("\s+",self.dict['processed_description']['texts']['en']))
-        else:
+        except:
             return 0
 
     def getLog10EnglishDescriptionLength(self):
@@ -158,17 +199,24 @@ class KivaLoan(object):
 
     def getMultipleFeatures(self, 
                             fieldList=['Log10LoanAmount',
-                                       'HasImage',
                                        'MajorityGender',
-                                       'PostedDayOfMonth',
-                                       'PostedMonth',
+                                       'PostedMonthJan',
+                                       'PostedMonthFeb',
+                                       'PostedMonthMar',
+                                       'PostedMonthApr',
+                                       'PostedMonthMay',
+                                       'PostedMonthJun',
+                                       'PostedMonthJul',
+                                       'PostedMonthAug',
+                                       'PostedMonthSep',
+                                       'PostedMonthOct',
+                                       'PostedMonthNov',
+                                       'PostedMonthDec',
                                        'GeoLatitude',
                                        'GeoLongitude',
                                        'RepaymentTerm',
                                        'Log10NumberOfBorrowers',
-                                       'BonusCreditEligibility',
-                                       'HasTranslator',
-                                       'Log10EnglishDescriptionLength'],
+                                       'BonusCreditEligibility'],
                             transformCategorical=False):
         result = []
         for f in sorted(fieldList):
@@ -204,7 +252,12 @@ if __name__ == "__main__":
     assert(loan1c.getMajorityGender() == 'F')
     assert(loan1c.getHasImage())
     assert(loan1c.getPostedDayOfMonth() == 26),"found %d" % loan1c.getPostedDayOfMonth()
-    assert(loan1c.getPostedMonth() == 2),"found %d" % loan1c.getPostedMonth()
+    assert(not loan1c.getPostedMonthJan())
+    assert(not loan1c.getPostedMonth(1))
+    assert(loan1c.getPostedMonthFeb())
+    assert(loan1c.getPostedMonth(2))
+    assert(not loan1c.getPostedMonthMar())
+    assert(not loan1c.getPostedMonth(3))
     assert(loan1c.getGeoLatitude() == 31.0)
     assert(loan1c.getGeoLongitude() == 36.0)
     assert(loan1c.getRepaymentTerm() == 15)

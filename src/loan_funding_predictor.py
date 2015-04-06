@@ -8,6 +8,8 @@ from os.path import expanduser
 from SldaTextFeatureGenerator import SldaTextFeatureGenerator
 import pandas as pd
 import numpy as np
+from datetime import datetime
+import re
 
 if __name__ == "__main__":
     
@@ -15,7 +17,9 @@ if __name__ == "__main__":
     parser.add_argument('--loanIdFile', 
                         help='(INPUT) File with loan IDs for training instances, one per line',
                         action='append',
-                        required=True)
+                        required=False)
+    parser.add_argument('--startYear', help='Loans earlier than this year are discarded', default=1900)
+    parser.add_argument('--endYear', help='Loans later than this year are discarded', default=2999)
     parser.add_argument('--logResModelFile', 
                         help='(OUTPUT) File to store the logres model for later deployment',
                         default='/tmp/kivaLoanFundingPredictor.pkl')
@@ -23,13 +27,13 @@ if __name__ == "__main__":
 
     loanIds = []
     loanIdsHash = {}
-    for loanIdFile in args.loanIdFile:
-        print >> sys.stderr, "Reading loan IDs from %s ..." % loanIdFile,
-        loanIds.extend([int(line.strip()) for line in open(loanIdFile,"rb")])
-        loanIdsHash.update({(loanId,1) for loanId in loanIds})
-        print >> sys.stderr, "done"
+    if args.loanIdFile:
+        for loanIdFile in args.loanIdFile:
+            print >> sys.stderr, "Reading loan IDs from %s ..." % loanIdFile,
+            loanIds.extend([int(line.strip()) for line in open(loanIdFile,"rb")])
+            loanIdsHash.update({(loanId,1) for loanId in loanIds})
+            print >> sys.stderr, "done"
     assert(len(loanIds) == len(loanIdsHash.keys()))
-    print >> sys.stderr, "Total number of loan IDs read: %d" % len(loanIds)
 
     
     # Retrieve all training instances by their loan id
@@ -37,11 +41,23 @@ if __name__ == "__main__":
     loansCollection = client.kiva.loans
 
     # Now read the loans from MongoDB, and create a (huge) KivaLoans object
-    print >> sys.stderr, "Creating MongoDB cursor to collect %d loan instances by ID ..." % len(loanIds),
-    c = loansCollection.find({"id": {"$in": loanIds}});
+    if len(loanIds) > 0:
+        print >> sys.stderr, "Creating MongoDB cursor to collect %d loan instances by ID ..." % len(loanIds),
+        print >> sys.stderr, "Total number of loan IDs read: %d" % len(loanIds)
+        c = loansCollection.find({"id": {"$in": loanIds}});
+    else:
+        startYear = int(args.startYear)
+        startDate = datetime(startYear, 1, 1, 0, 0, 0)
+        endYear = int(args.endYear)
+        endDate = datetime(endYear, 12, 31, 23, 59, 59)
+        print >> sys.stderr, "Creating MongoDB cursor to collect instances from %d through %d ..." % (startYear, endYear),
+        c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : startDate }},
+                                            {"posted_date" : { "$lte" : endDate }}
+                                            ]
+                                  })
     print >> sys.stderr, "done"
 
-    print >> sys.stderr, "Storing loan documents KivaLoans instance ..."
+    print >> sys.stderr, "Storing loan documents in KivaLoans instance ..."
     # Key: loanId
     # Value: the entry
     loans = KivaLoans(loanDictList=[])
@@ -56,6 +72,8 @@ if __name__ == "__main__":
     groundTruthLabels = loans.getLabels()
     print >> sys.stderr, "done"
     assert(len(groundTruthLabels) == loans.getSize())
+    print >> sys.stderr, "number of 0s (not fully funded) = ", len([l for l in groundTruthLabels if l == 0])
+    print >> sys.stderr, "number of 1s (fully funded) = ", len([l for l in groundTruthLabels if l == 1])
 
     print >> sys.stderr, "Setting up sLDA feature generator ...",
     homeDir = expanduser("~")
@@ -110,16 +128,18 @@ if __name__ == "__main__":
                           'topic_05', 'topic_06', 'topic_07', 'topic_08', 'topic_09', 
                           'topic_10', 'topic_11', 'topic_12', 'topic_13', 'topic_14', 
                           'topic_15', 'topic_16', 'topic_17', 'topic_18', 'topic_19'])
+    featureGroups.append(['PostedMonthJan', 'PostedMonthFeb', 'PostedMonthMar',
+                          'PostedMonthApr', 'PostedMonthMay', 'PostedMonthJun',
+                          'PostedMonthJul', 'PostedMonthAug', 'PostedMonthSep',
+                          'PostedMonthOct', 'PostedMonthNov', 'PostedMonthDec', ])
     featureGroups.append(['MajorityGender'])
-    featureGroups.append(['PostedDayOfMonth', 'PostedMonth'])
     featureGroups.append(['Log10NumberOfBorrowers'])
     featureGroups.append(['LoansPosted','TotalAmountRaised'])
     featureGroups.append(['GeoLatitude', 'GeoLongitude'])
     featureGroups.append(['RepaymentTerm'])
-    featureGroups.append(['BonusCreditEligibility'])
     featureGroups.append(['DelinquencyRate', 'Rating'])
+    featureGroups.append(['BonusCreditEligibility'])
     featureGroups.append(['Log10EnglishDescriptionLength'])
-    featureGroups.append(['HasImage', 'HasTranslator'])
 
     baselineFeatureGroup = ['Baseline']
 
@@ -169,3 +189,26 @@ if __name__ == "__main__":
 
     print >> sys.stderr, "probaList = ", probaList
     print >> sys.stderr, "predictions = ", predictions
+
+    activeColumns = predictor.getActiveColumns()
+    modelCoefficients = predictor.getCoefficients()
+
+    print >> sys.stderr, "active columns ", activeColumns
+    print >> sys.stderr, "coefficients", modelCoefficients
+    assert(len(activeColumns) == len(modelCoefficients))
+
+    sortedFeatureCoefficients = sorted([featureCoefficient for featureCoefficient in zip(activeColumns,modelCoefficients)], 
+                                       key=lambda x:x[1], 
+                                       reverse=True)
+
+    topics = slda.getTopics(nrWordsPerTopic=10, sortedByDescendingEta=False, withEtas=False, withBetas=False)
+    print topics
+    print >> sys.stderr, "sorted feature coefficients in trained model:"
+    for sf in sortedFeatureCoefficients:
+        feature, coefficient = sf
+        print >> sys.stderr, sf,
+        m = re.match("^topic_(\d+)$",feature)
+        if m:
+            topicIndex = int(m.group(1))
+            print >> sys.stderr, topics[topicIndex]
+        print >> sys.stderr, ""

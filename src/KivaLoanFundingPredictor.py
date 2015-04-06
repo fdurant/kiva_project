@@ -55,7 +55,7 @@ class KivaLoanFundingPredictor(object):
         self.X = X_scaled
         self.y = y
     
-    def train(self, estimator=LogisticRegression(C=1,class_weight=None)):
+    def train(self, estimator=LogisticRegression(C=1,class_weight='auto')):
         # Necessary for logistic regression
 
         self.estimator = estimator
@@ -63,7 +63,7 @@ class KivaLoanFundingPredictor(object):
 
     def trainAndEvaluate(self, 
                          cValues=[pow(10,x-10) for x in range(20)], 
-                         classWeight=None, 
+                         classWeight='auto', 
                          scorerType='roc_auc', 
                          nrCrossValidationFolds=10):
 

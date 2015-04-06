@@ -20,6 +20,7 @@ if __name__ == "__main__":
                         required=False)
     parser.add_argument('--startYear', help='Loans earlier than this year are discarded', default=1900)
     parser.add_argument('--endYear', help='Loans later than this year are discarded', default=2999)
+    parser.add_argument('--maxNrDocs', help='Do not retrieve more than this number of documents', required=False)
     parser.add_argument('--logResModelFile', 
                         help='(OUTPUT) File to store the logres model for later deployment',
                         default='/tmp/kivaLoanFundingPredictor.pkl')
@@ -44,17 +45,26 @@ if __name__ == "__main__":
     if len(loanIds) > 0:
         print >> sys.stderr, "Creating MongoDB cursor to collect %d loan instances by ID ..." % len(loanIds),
         print >> sys.stderr, "Total number of loan IDs read: %d" % len(loanIds)
-        c = loansCollection.find({"id": {"$in": loanIds}});
+        if args.maxNrDocs:
+            c = loansCollection.find({"id": {"$in": loanIds}}).limit(int(args.maxNrDocs))
+        else:
+            c = loansCollection.find({"id": {"$in": loanIds}})
     else:
         startYear = int(args.startYear)
         startDate = datetime(startYear, 1, 1, 0, 0, 0)
         endYear = int(args.endYear)
         endDate = datetime(endYear, 12, 31, 23, 59, 59)
         print >> sys.stderr, "Creating MongoDB cursor to collect instances from %d through %d ..." % (startYear, endYear),
-        c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : startDate }},
-                                            {"posted_date" : { "$lte" : endDate }}
-                                            ]
-                                  })
+        if args.maxNrDocs:
+            c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : startDate }},
+                                                {"posted_date" : { "$lte" : endDate }}
+                                                ]
+                                      }).limit(int(args.maxNrDocs))
+        else:
+            c = loansCollection.find({"$and" : [{"posted_date" : { "$gte" : startDate }},
+                                                {"posted_date" : { "$lte" : endDate }}
+                                                ]
+                                      })
     print >> sys.stderr, "done"
 
     print >> sys.stderr, "Storing loan documents in KivaLoans instance ..."
@@ -189,12 +199,13 @@ if __name__ == "__main__":
 
     print >> sys.stderr, "probaList = ", probaList
     print >> sys.stderr, "predictions = ", predictions
+    print >> sys.stderr, ""
 
     activeColumns = predictor.getActiveColumns()
     modelCoefficients = predictor.getCoefficients()
 
-    print >> sys.stderr, "active columns ", activeColumns
-    print >> sys.stderr, "coefficients", modelCoefficients
+#    print >> sys.stderr, "active columns ", activeColumns
+#    print >> sys.stderr, "coefficients", modelCoefficients
     assert(len(activeColumns) == len(modelCoefficients))
 
     sortedFeatureCoefficients = sorted([featureCoefficient for featureCoefficient in zip(activeColumns,modelCoefficients)], 
@@ -202,7 +213,7 @@ if __name__ == "__main__":
                                        reverse=True)
 
     topics = slda.getTopics(nrWordsPerTopic=10, sortedByDescendingEta=False, withEtas=False, withBetas=False)
-    print topics
+#    print topics
     print >> sys.stderr, "sorted feature coefficients in trained model:"
     for sf in sortedFeatureCoefficients:
         feature, coefficient = sf

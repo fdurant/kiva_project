@@ -72,7 +72,7 @@ if __name__ == "__main__":
     # Value: the entry
     loans = KivaLoans(loanDictList=[])
     for i,loan in enumerate(c):
-        if i % 1000 == 0 and i != 0:
+        if i % 10000 == 0 and i != 0:
             print >> sys.stderr, "  read %d documents ..." % i
         id = loan['id']
         loans.push(KivaLoan(dict=loan))

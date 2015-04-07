@@ -213,7 +213,7 @@ if __name__ == "__main__":
                                        reverse=True)
 
     topics = slda.getTopics(nrWordsPerTopic=10, sortedByDescendingEta=False, withEtas=False, withBetas=False)
-#    print topics
+    print topics
     print >> sys.stderr, "sorted feature coefficients in trained model:"
     for sf in sortedFeatureCoefficients:
         feature, coefficient = sf
